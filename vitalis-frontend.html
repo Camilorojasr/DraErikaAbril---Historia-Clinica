@@ -266,6 +266,23 @@ td{ padding:9px 10px; border-top:1px solid var(--border); vertical-align:middle;
   .sidebar{ display:none; }
   .ai-panel{ width:100%; right:-100%; }
 }
+
+/* ================= exportar / imprimir historia clínica ================= */
+#print-export{ display:none; }
+.export-doc{ font-family:"Work Sans", sans-serif; color:#20261f; max-width:760px; margin:0 auto; }
+.export-doc h1{ font-family:"Fraunces",serif; font-size:22px; margin-bottom:2px; }
+.export-doc .export-sub{ color:#5c6659; font-size:12.5px; margin-bottom:18px; }
+.export-doc h2{ font-family:"Fraunces",serif; font-size:15px; margin:20px 0 8px; border-bottom:1px solid #dde1d8; padding-bottom:4px; }
+.export-doc table{ width:100%; border-collapse:collapse; font-size:12.5px; margin-bottom:6px; }
+.export-doc td{ padding:3px 6px 3px 0; vertical-align:top; }
+.export-doc td.k{ color:#5c6659; white-space:nowrap; width:38%; }
+.export-doc ul{ margin:4px 0; padding-left:18px; font-size:12.5px; }
+.export-doc .export-empty{ color:#8b9587; font-style:italic; font-size:12.5px; }
+@media print{
+  body *{ visibility:hidden; }
+  #print-export, #print-export *{ visibility:visible; }
+  #print-export{ display:block; position:absolute; top:0; left:0; width:100%; padding:24px; }
+}
 </style>
 
 <div class="shell">
@@ -345,6 +362,7 @@ td{ padding:9px 10px; border-top:1px solid var(--border); vertical-align:middle;
             </div>
           </div>
           <div class="head-actions">
+            <button class="btn btn-sm" id="btn-export">Exportar</button>
             <button class="btn btn-sm" id="btn-history">Historial de cambios</button>
             <button class="btn btn-primary btn-sm" id="btn-new-consult-patient">＋ Nueva consulta</button>
           </div>
@@ -484,6 +502,7 @@ td{ padding:9px 10px; border-top:1px solid var(--border); vertical-align:middle;
 
 <div class="modal-scrim" id="modal-scrim"><div class="modal" id="modal-box" role="dialog" aria-modal="true"></div></div>
 <div id="toast-container"></div>
+<div id="print-export"></div>
 
 <script>
 (function(){
@@ -2591,6 +2610,157 @@ function wireBrandTheme(){
   applyBrandTheme(saved);
 }
 
+/* =====================================================================
+   EXPORTAR HISTORIA CLÍNICA
+   Dos formatos con propósitos distintos:
+   - PDF (impresión del navegador): espejo fiel de la ficha, para archivo
+     o compartir con otro profesional. Incluye todos los datos.
+   - JSON para IA: pensado para pegar en otra conversación de Claude y
+     generar un plan nutricional. Deliberadamente NO incluye documento,
+     teléfono, email, dirección ni contacto de emergencia — solo lo
+     clínicamente relevante, para minimizar datos sensibles enviados a
+     un sistema externo.
+   ===================================================================== */
+function kvTableHtml(fields, data){
+  return '<table>'+fields.map(function(f){
+    return '<tr><td class="k">'+esc(f[1])+'</td><td>'+docText(data[f[0]])+'</td></tr>';
+  }).join('')+'</table>';
+}
+function buildExportHTML(p){
+  var d = p.personal;
+  var age = ageFromDob(d.fechaNacimiento);
+  var antecedentesHtml = ANTECEDENTE_CATEGORIAS.map(function(cat){
+    var recs = p.antecedentes.filter(function(a){ return a.categoria===cat.k; });
+    if(!recs.length) return '';
+    return '<p><b>'+esc(cat.label)+':</b></p><ul>'+recs.map(function(r){
+      return '<li>'+esc(STATUS_LABEL[r.status])+(r.descripcion?(' — '+esc(r.descripcion)):'')+(r.fecha?(' ('+esc(isoToLabel(r.fecha))+')'):'')+'</li>';
+    }).join('')+'</ul>';
+  }).join('') || '<p class="export-empty">Sin antecedentes documentados.</p>';
+
+  var sintomasPresentes = p.symptoms.filter(function(s){ return s.status===STATUS.PRESENT; });
+  var sintomasHtml = sintomasPresentes.length ? '<ul>'+sintomasPresentes.map(function(s){ return '<li>'+esc(s.nombre)+'</li>'; }).join('')+'</ul>' : '<p class="export-empty">Sin síntomas marcados como presentes.</p>';
+
+  var latest = getLatestAntro(p);
+  var latestV = getLatestVitals(p);
+  var antroHtml = latest ? kvTableHtml([['peso','Peso (kg)'],['talla','Talla (cm)'],['imc','IMC'],['abdominal','Circunf. abdominal'],['cintura','Cintura'],['cadera','Cadera'],['brazo','Brazo'],['muslo','Muslo'],['graso','% graso'],['muscular','% muscular']], latest) : '<p class="export-empty">Sin mediciones registradas.</p>';
+  var vitalsHtml = latestV ? kvTableHtml([['fc','Frecuencia cardíaca'],['ta','Tensión arterial'],['temp','Temperatura'],['spo2','Saturación O2']], latestV) : '<p class="export-empty">Sin signos vitales registrados.</p>';
+
+  var medsActivos = p.medicamentos.filter(function(m){ return m.estado==='activa'; });
+  var suppsActivos = p.suplementos.filter(function(s){ return s.estado==='activa'; });
+  var medsHtml = (medsActivos.length||suppsActivos.length) ? '<ul>'+
+    medsActivos.map(function(m){ return '<li>'+esc(m.nombre)+' — '+esc(m.dosis)+' · '+esc(m.frecuencia)+'</li>'; }).join('')+
+    suppsActivos.map(function(s){ return '<li>'+esc(s.nombre)+' (suplemento) — '+esc(s.dosis)+'</li>'; }).join('')+
+    '</ul>' : '<p class="export-empty">Sin medicación ni suplementos activos.</p>';
+
+  var labsHtml = p.labs.length ? kvTableHtml(p.labs.map(function(l){ return [l.id,l.nombre]; }), p.labs.reduce(function(acc,l){ acc[l.id] = l.valor+' '+l.unidad+(l.fecha?(' ('+isoToLabel(l.fecha)+')'):''); return acc; },{})) : '<p class="export-empty">Sin laboratorios registrados.</p>';
+
+  return '<div class="export-doc">' +
+    '<h1>'+esc(fullName(p))+'</h1>' +
+    '<div class="export-sub">Historia clínica · Vitalis · '+esc(todayLabel())+(age!=null?(' · '+age+' años'):'')+(d.sexo?(' · '+esc(d.sexo)):'')+(d.pais?(' · '+esc(d.pais)):'')+'</div>' +
+    kvTableHtml([['documento','Documento'],['telefono','Teléfono'],['email','Correo'],['direccion','Dirección']], d) +
+    '<h2>Objetivo</h2><p>'+esc(objetivoLabel(p)||'Sin registrar')+'</p>' +
+    '<h2>Situación general</h2><p>'+(isBlank(p.resumen.situacion)?'<span class="export-empty">Por documentar.</span>':esc(p.resumen.situacion))+'</p>' +
+    '<h2>Antecedentes</h2>'+antecedentesHtml +
+    '<h2>Revisión por sistemas — síntomas presentes</h2>'+sintomasHtml +
+    '<h2>Antropometría</h2>'+antroHtml +
+    '<h2>Signos vitales</h2>'+vitalsHtml +
+    '<h2>Nutrición — patrón alimentario</h2>'+kvTableHtml(NUTRI_PATRON_FIELDS, p.nutricion.patron) +
+    '<h2>Nutrición — calidad y composición</h2>'+kvTableHtml(NUTRI_CALIDAD_FIELDS, p.nutricion.calidad) +
+    '<h2>Nutrición — conducta alimentaria</h2>'+kvTableHtml(NUTRI_CONDUCTA_FIELDS, p.nutricion.conducta) +
+    '<h2>Hábitos</h2>' +
+    kvTableHtml(HABIT_FIELDS.actividad, p.habitos.actividad) +
+    kvTableHtml(HABIT_FIELDS.sueno, p.habitos.sueno) +
+    kvTableHtml(HABIT_FIELDS.estres, p.habitos.estres) +
+    kvTableHtml(HABIT_FIELDS.hidratacion, p.habitos.hidratacion) +
+    kvTableHtml(HABIT_FIELDS.sustancias, p.habitos.sustancias) +
+    '<h2>Medicación y suplementos activos</h2>'+medsHtml +
+    '<h2>Laboratorios</h2>'+labsHtml +
+  '</div>';
+}
+function exportPatientPDF(p){
+  document.getElementById('print-export').innerHTML = buildExportHTML(p);
+  window.print();
+}
+
+function buildAIExportData(p){
+  var d = p.personal;
+  var latest = getLatestAntro(p);
+  var latestV = getLatestVitals(p);
+  var antecedentesRelevantes = p.antecedentes
+    .filter(function(a){ return a.status===STATUS.PRESENT; })
+    .map(function(a){ return { categoria: catLabel(a.categoria), descripcion: a.descripcion, fecha: a.fecha||null }; });
+  var sintomasPresentes = p.symptoms
+    .filter(function(s){ return s.status===STATUS.PRESENT; })
+    .map(function(s){ return { categoria: s.categoria, nombre: s.nombre }; });
+  function pick(fields, data){
+    var out = {};
+    fields.forEach(function(f){ if(!isBlank(data[f[0]])) out[f[0]] = data[f[0]]; });
+    return out;
+  }
+  return {
+    instrucciones: 'Datos clínicos y nutricionales de un paciente real, exportados desde Vitalis para generar un plan nutricional personalizado. No incluye datos de identificación directa (documento, teléfono, email, dirección).',
+    paciente: { nombre: fullName(p), edad: ageFromDob(d.fechaNacimiento), sexo: d.sexo||null, pais: d.pais||null, objetivo: objetivoLabel(p)||null },
+    antropometria: latest ? { fecha: latest.fecha, pesoKg: latest.peso, tallaCm: latest.talla, imc: latest.imc, circunferenciaAbdominalCm: latest.abdominal||null, cinturaCm: latest.cintura||null, caderaCm: latest.cadera||null, brazoCm: latest.brazo||null, musloCm: latest.muslo||null, porcentajeGraso: latest.graso||null, porcentajeMuscular: latest.muscular||null } : null,
+    signosVitales: latestV ? { fecha: latestV.fecha, fc: latestV.fc||null, ta: latestV.ta||null, temp: latestV.temp||null, spo2: latestV.spo2||null } : null,
+    antecedentesRelevantes: antecedentesRelevantes,
+    sintomasPresentes: sintomasPresentes,
+    nutricion: {
+      patron: pick(NUTRI_PATRON_FIELDS, p.nutricion.patron),
+      calidadPorComida: pick(NUTRI_CALIDAD_FIELDS, p.nutricion.calidad),
+      conducta: pick(NUTRI_CONDUCTA_FIELDS, p.nutricion.conducta),
+      diarioReciente: p.nutricion.diario.slice(0,5).map(function(r){ return { fecha:r.fecha, comida:r.comida, alimentos:r.alimentos, hambre:r.hambre, saciedad:r.saciedad, contexto:r.contexto }; })
+    },
+    habitos: {
+      actividadFisica: pick(HABIT_FIELDS.actividad, p.habitos.actividad),
+      sueno: pick(HABIT_FIELDS.sueno, p.habitos.sueno),
+      estres: pick(HABIT_FIELDS.estres, p.habitos.estres),
+      hidratacion: pick(HABIT_FIELDS.hidratacion, p.habitos.hidratacion),
+      sustancias: pick(HABIT_FIELDS.sustancias, p.habitos.sustancias)
+    },
+    medicamentosActivos: p.medicamentos.filter(function(m){ return m.estado==='activa'; }).map(function(m){ return { nombre:m.nombre, dosis:m.dosis, frecuencia:m.frecuencia }; }),
+    suplementosActivos: p.suplementos.filter(function(s){ return s.estado==='activa'; }).map(function(s){ return { nombre:s.nombre, dosis:s.dosis, motivo:s.motivo }; }),
+    laboratoriosRecientes: p.labs.slice(0,10).map(function(l){ return { nombre:l.nombre, valor:l.valor, unidad:l.unidad, rango:l.rango, fecha:l.fecha||null }; }),
+    situacionGeneral: isBlank(p.resumen.situacion) ? null : p.resumen.situacion
+  };
+}
+function openExportModal(p){
+  openModal(
+    '<h3>Exportar historia clínica</h3><div class="modal-sub">'+esc(fullName(p))+'</div>' +
+    '<div style="display:flex; flex-direction:column; gap:10px; margin-top:6px;">' +
+      '<button class="btn" id="exp-pdf" style="justify-content:flex-start;">📄 Descargar / imprimir PDF completo</button>' +
+      '<div class="field-hint">Espejo fiel de la ficha, para archivo o compartir con otro profesional.</div>' +
+      '<button class="btn" id="exp-json" style="justify-content:flex-start; margin-top:6px;">🤖 Copiar JSON para generar plan nutricional con IA</button>' +
+      '<div class="field-hint">Copia al portapapeles un JSON listo para pegar en una conversación de Claude. No incluye documento, teléfono, email ni dirección.</div>' +
+    '</div>' +
+    '<div class="modal-actions"><span></span><div class="right-actions"><button class="btn btn-ghost" id="exp-close">Cerrar</button></div></div>',
+    function(box){
+      box.querySelector('#exp-close').addEventListener('click', closeModal);
+      box.querySelector('#exp-pdf').addEventListener('click', function(){
+        closeModal();
+        setTimeout(function(){ exportPatientPDF(p); }, 50);
+      });
+      box.querySelector('#exp-json').addEventListener('click', function(){
+        var text = JSON.stringify(buildAIExportData(p), null, 2);
+        var done = function(){ showToast('JSON copiado al portapapeles'); closeModal(); };
+        var fail = function(){
+          // Respaldo si el portapapeles no está disponible: seleccionar el texto para copiar manualmente.
+          openModal(
+            '<h3>Copia manual</h3><div class="modal-sub">No se pudo usar el portapapeles automáticamente. Selecciona y copia el texto:</div>' +
+            '<textarea id="exp-json-fallback" rows="16" style="width:100%; font-family:\'IBM Plex Mono\',monospace; font-size:11.5px;" readonly></textarea>' +
+            '<div class="modal-actions"><span></span><div class="right-actions"><button class="btn btn-primary" id="exp-fallback-close">Cerrar</button></div></div>',
+            function(box2){
+              box2.querySelector('#exp-json-fallback').value = text;
+              box2.querySelector('#exp-json-fallback').select();
+              box2.querySelector('#exp-fallback-close').addEventListener('click', closeModal);
+            }
+          );
+        };
+        if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(done, fail); } else { fail(); }
+      });
+    }
+  );
+}
+
 /* ================= wiring de eventos e inicialización ================= */
 function wireEvents(){
   wireBrandTheme();
@@ -2602,6 +2772,7 @@ function wireEvents(){
   document.getElementById('btn-new-consult').addEventListener('click', openSelectPatientModal);
   document.getElementById('btn-new-consult-patient').addEventListener('click', function(){ startNewConsult(STATE.currentPatientId); });
   document.getElementById('btn-edit-personal').addEventListener('click', function(){ openEditPersonalModal(STATE.patients[STATE.currentPatientId]); });
+  document.getElementById('btn-export').addEventListener('click', function(){ openExportModal(STATE.patients[STATE.currentPatientId]); });
   document.getElementById('btn-history').addEventListener('click', function(){ goToTab('linea'); });
   document.getElementById('btn-add-antecedente').addEventListener('click', function(){ openAntecedenteModal(STATE.patients[STATE.currentPatientId], ANTECEDENTE_CATEGORIAS[0].k, null); });
   document.getElementById('btn-add-diario').addEventListener('click', function(){ openDiarioModal(STATE.patients[STATE.currentPatientId]); });
