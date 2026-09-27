@@ -374,18 +374,13 @@ td{ padding:9px 10px; border-top:1px solid var(--border); vertical-align:middle;
             <h4><span class="letter">A</span> Motivo de consulta</h4>
             <div class="form-grid">
               <div class="field" id="field-c-motivo"><label>Motivo principal <span class="req">*</span></label><textarea rows="2" id="c-motivo"></textarea><div class="field-error">Este campo es obligatorio para finalizar la consulta.</div></div>
-              <div class="field"><label>Expectativas del paciente</label><textarea rows="2" id="c-expectativas"></textarea></div>
               <div class="field"><label>Objetivos</label><input type="text" id="c-objetivos"></div>
-              <div class="field"><label>Prioridades de hoy</label><input type="text" id="c-prioridades"></div>
             </div>
           </div>
           <div class="consult-block">
             <h4><span class="letter">B</span> Historia del problema actual</h4>
             <div class="form-grid">
-              <div class="field"><label>Inicio</label><input type="text" id="c-inicio"></div>
-              <div class="field"><label>Frecuencia</label><input type="text" id="c-frecuencia"></div>
-              <div class="field"><label>Factores desencadenantes</label><input type="text" id="c-desencadenantes"></div>
-              <div class="field"><label>Factores que alivian</label><input type="text" id="c-alivian"></div>
+              <div class="field" style="grid-column:1/-1;"><label>Historia del problema actual</label><textarea rows="3" id="c-historia" placeholder="Inicio, frecuencia, factores desencadenantes y qué lo alivia, en un solo párrafo."></textarea></div>
               <div class="field" style="grid-column:1/-1;"><label>Notas libres de la consulta</label><textarea rows="4" id="c-notas" placeholder="Escriba aquí en lenguaje natural — el asistente de IA puede organizarlas."></textarea></div>
             </div>
           </div>
@@ -651,7 +646,22 @@ function persist(){ return Repo.persistAll(); }
    ===================================================================== */
 
 function emptyPersonal(){
-  return { nombre:'', apellidos:'', fechaNacimiento:'', sexo:'', documento:'', telefono:'', email:'', direccion:'', contactoEmergencia:'' };
+  return { nombre:'', apellidos:'', fechaNacimiento:'', sexo:'', pais:'', documento:'', telefono:'', email:'', direccion:'', contactoEmergencia:'', objetivo:'', objetivoOtro:'' };
+}
+var OBJETIVO_OPTIONS = [
+  {v:'', l:'Seleccionar…'},
+  {v:'perdida_peso_ganancia_muscular', l:'Pérdida de peso y ganancia muscular'},
+  {v:'ganancia_muscular', l:'Aumento de masa muscular'},
+  {v:'relacion_comida', l:'Mejorar relación con la comida'},
+  {v:'mejorar_habitos', l:'Mejorar hábitos'},
+  {v:'otro', l:'Otro'}
+];
+function objetivoLabel(p){
+  var d = p.personal;
+  if(!d.objetivo) return '';
+  if(d.objetivo==='otro') return d.objetivoOtro ? d.objetivoOtro : 'Otro';
+  var opt = OBJETIVO_OPTIONS.find(function(o){ return o.v===d.objetivo; });
+  return opt ? opt.l : '';
 }
 
 function fullName(p){
@@ -685,13 +695,13 @@ var PatientService = {
       id: id,
       personal: {
         nombre: form.nombre||'', apellidos: form.apellidos||'', fechaNacimiento: form.fechaNacimiento||'',
-        sexo: form.sexo||'', documento: form.documento||'', telefono: form.telefono||'', email: form.email||'',
-        direccion: '', contactoEmergencia: ''
+        sexo: form.sexo||'', pais: form.pais||'', documento: form.documento||'', telefono: form.telefono||'', email: form.email||'',
+        direccion: '', contactoEmergencia: '', objetivo: form.objetivo||'', objetivoOtro: form.objetivoOtro||''
       },
       antecedentes: [],
       symptoms: clone(SYMPTOM_TEMPLATE),
-      nutricion: { patron:{comidas:'',horarios:'',regularidad:'',fuera:'',preparacion:''}, calidad:{fv:'',proteinas:'',cereales:'',grasas:'',fibra:'',ultraprocesados:'',azucares:'',bebidas:''}, conducta:{hambre:'',saciedad:'',velocidad:'',atencion:'',ansiedad:'',aburrimiento:'',antojos:'',nocturna:''}, diario:[] },
-      habitos: { actividad:{tipo:'',frecuencia:'',duracion:'',intensidad:'',pasos:'',sedentarismo:''}, sueno:{acostarse:'',levantarse:'',duracion:'',calidad:'',latencia:'',somnolencia:''}, estres:{nivel:'',fuentes:'',estrategias:''}, hidratacion:{cantidad:'',tipo:'',distribucion:''}, sustancias:{alcohol:'',tabaco:'',otras:'',pantallas:''}, objetivos:[], barreras:[], facilitadores:[], seguimiento:[] },
+      nutricion: { patron:{comidas:'',horarios:'',fuera:'',preparacion:'',noLeGusta:'',preferencia:''}, calidad:{desayuno:'',mediaManana:'',almuerzo:'',mediaTarde:'',cena:''}, conducta:{hambre:'',saciedad:'',velocidad:'',atencion:'',ansiedad:'',aburrimiento:'',antojos:'',nocturna:''}, diario:[] },
+      habitos: { actividad:{tipo:'',frecuencia:'',duracion:'',sedentarismo:''}, sueno:{acostarse:'',levantarse:'',duracion:'',calidad:'',latencia:'',somnolencia:''}, estres:{nivel:'',fuentes:'',estrategias:''}, hidratacion:{cantidad:'',tipo:''}, sustancias:{alcohol:'',tabaco:'',otras:'',pantallas:''}, objetivos:[], barreras:[], facilitadores:[], seguimiento:[] },
       medicionesAntropometricas: [],
       signosVitales: [],
       labs: [],
@@ -720,8 +730,7 @@ var ANTECEDENTE_CATEGORIAS = [
   {k:'familiares', label:'Antecedentes familiares'},
   {k:'quirurgicos', label:'Quirúrgicos / hospitalizaciones'},
   {k:'alergias', label:'Alergias e intolerancias'},
-  {k:'reproductiva', label:'Salud reproductiva'},
-  {k:'nutricional', label:'Antecedentes nutricionales'}
+  {k:'reproductiva', label:'Salud reproductiva'}
 ];
 var AntecedenteService = {
   add: function(p, data){
@@ -745,6 +754,19 @@ var AntecedenteService = {
   }
 };
 function catLabel(k){ var c = ANTECEDENTE_CATEGORIAS.find(function(x){ return x.k===k; }); return c ? c.label : k; }
+
+/* ================= Resumen: datos reales derivados de otras pestañas =================
+   "Problemas activos" y "Pendientes" ya no se escriben a mano: se calculan a partir
+   de la Revisión por sistemas y los Antecedentes, para que el Resumen refleje lo que
+   de verdad está documentado en la ficha. */
+function problemasActivosDe(p){
+  return p.symptoms.filter(function(s){ return s.status===STATUS.PRESENT; })
+    .map(function(s){ return { nombre: s.nombre, estado: 'Presente', tone: 'warn' }; });
+}
+function pendientesDe(p){
+  return p.antecedentes.filter(function(a){ return a.status===STATUS.NOT_DOCUMENTED; })
+    .map(function(a){ return { texto: 'Documentar: '+catLabel(a.categoria), fecha: null }; });
+}
 
 /* ================= NutricionService ================= */
 var NutricionService = {
@@ -799,7 +821,7 @@ var AntropometriaService = {
     var peso = data.peso!==''&&data.peso!=null ? Number(data.peso) : null;
     var talla = data.talla!==''&&data.talla!=null ? Number(data.talla) : null;
     var imc = (peso && talla) ? +(peso / Math.pow(talla/100,2)).toFixed(1) : null;
-    var rec = { id: uid('antro'), fecha: data.fecha||todayISO(), peso: peso, talla: talla, imc: imc, abdominal: data.abdominal||'', cintura: data.cintura||'', cadera: data.cadera||'', graso: data.graso||'', muscular: data.muscular||'', observaciones: data.observaciones||'' };
+    var rec = { id: uid('antro'), fecha: data.fecha||todayISO(), peso: peso, talla: talla, imc: imc, abdominal: data.abdominal||'', cintura: data.cintura||'', cadera: data.cadera||'', brazo: data.brazo||'', muslo: data.muslo||'', graso: data.graso||'', muscular: data.muscular||'', observaciones: data.observaciones||'' };
     p.medicionesAntropometricas.push(rec);
     p.medicionesAntropometricas.sort(function(a,b){ return a.fecha < b.fecha ? -1 : 1; });
     TimelineService.log(p, 'antropometria', 'Antropometría registrada', 'Peso '+(peso!=null?peso+' kg':'—')+(imc?(' · IMC '+imc):'')+' ('+isoToLabel(rec.fecha)+')');
@@ -885,7 +907,7 @@ var MedicacionService = {
 /* ================= ConsultaService ================= */
 var ConsultaService = {
   start: function(p){
-    var rec = { id: uid('cons'), fecha: todayISO(), hora: new Date().toTimeString().slice(0,5), profesional:'Dra. Erika Abril', motivo:'', expectativas:'', objetivos:'', prioridades:'', inicio:'', frecuencia:'', desencadenantes:'', alivian:'', notas:'', evaluacion:'', plan:'', estado:'borrador', creadoEn: Date.now(), actualizadoEn: Date.now() };
+    var rec = { id: uid('cons'), fecha: todayISO(), hora: new Date().toTimeString().slice(0,5), profesional:'Dra. Erika Abril', motivo:'', objetivos:'', historia:'', notas:'', evaluacion:'', plan:'', estado:'borrador', creadoEn: Date.now(), actualizadoEn: Date.now() };
     p.consultas.unshift(rec);
     persist();
     return rec;
@@ -926,7 +948,7 @@ var ConsultaService = {
 var ResumenService = {
   update: function(p, data){
     p.resumen = Object.assign({}, p.resumen, data);
-    TimelineService.log(p, 'resumen', 'Resumen clínico actualizado', 'Se actualizó la situación general, objetivos, problemas o pendientes.');
+    TimelineService.log(p, 'resumen', 'Resumen clínico actualizado', 'Se actualizó la situación general.');
     persist();
   }
 };
@@ -935,8 +957,9 @@ var ResumenService = {
 function cycleSymptomStatus(p, id){
   var s = p.symptoms.find(function(x){ return x.id===id; });
   if(!s) return;
-  var order = [STATUS.NOT_EVALUATED, STATUS.PRESENT, STATUS.ABSENT];
+  var order = [STATUS.ABSENT, STATUS.PRESENT];
   var idx = order.indexOf(s.status);
+  if(idx===-1) idx = 0;
   s.status = order[(idx+1) % order.length];
   TimelineService.log(p, 'sintoma', 'Síntoma actualizado', s.nombre+': '+STATUS_LABEL[s.status]);
   persist();
@@ -955,7 +978,7 @@ function buildSymptomTemplate(){
   var out = [];
   SYMPTOM_CATS.forEach(function(cat){
     cat.items.forEach(function(name){
-      out.push({ id: uid('sx'), categoria: cat.k, nombre: name, status: STATUS.NOT_EVALUATED });
+      out.push({ id: uid('sx'), categoria: cat.k, nombre: name, status: STATUS.ABSENT });
     });
   });
   return out;
@@ -1321,7 +1344,7 @@ function computeDashboard(){
       if(t.ts >= weekAgo) cambiosSemana++;
       allEvents.push({patient:p, ev:t});
     });
-    (p.resumen.pendientes||[]).forEach(function(pend){ pendientesGlobal.push({patient:p, pend:pend}); });
+    pendientesDe(p).forEach(function(pend){ pendientesGlobal.push({patient:p, pend:pend}); });
   });
   allEvents.sort(function(a,b){ return b.ev.ts - a.ev.ts; });
   pendientesGlobal.sort(function(a,b){ return (a.pend.fecha||'') < (b.pend.fecha||'') ? -1 : 1; });
@@ -1415,12 +1438,13 @@ function renderPatientHeader(p){
   var metaParts = [];
   if(age!=null) metaParts.push(age+' años');
   if(p.personal.sexo) metaParts.push(p.personal.sexo);
+  if(p.personal.pais) metaParts.push(p.personal.pais);
   if(p.personal.direccion) metaParts.push(p.personal.direccion);
   document.getElementById('ph-meta').textContent = metaParts.length ? metaParts.join(' · ') : 'Datos personales por documentar';
 
   var medsActivos = p.medicamentos.filter(function(m){ return m.estado==='activa'; });
   var suppsActivos = p.suplementos.filter(function(s){ return s.estado==='activa'; });
-  var problemasActivos = (p.resumen.problemas||[]);
+  var problemasActivos = problemasActivosDe(p);
   var alergiaAnt = p.antecedentes.find(function(a){ return a.categoria==='alergias' && a.status===STATUS.PRESENT; });
 
   var facts = document.getElementById('ph-facts');
@@ -1493,18 +1517,21 @@ function tonePill(tone,text){
 function renderResumen(p){
   var box = document.getElementById('ptab-resumen');
   var r = p.resumen;
-  var objetivosChips = (r.objetivos||[]).map(function(o){ return '<span class="chip">'+esc(o.texto)+'</span>'; }).join('') || '<span class="empty-note">Sin objetivos registrados.</span>';
-  var problemasRows = (r.problemas||[]).length ? r.problemas.map(function(pr){ return '<div class="kv"><span class="k">'+esc(pr.nombre)+'</span><span class="v">'+tonePill(pr.tone,pr.estado)+'</span></div>'; }).join('') : '<div class="empty-note">Sin problemas activos registrados.</div>';
-  var pendientesRows = (r.pendientes||[]).length ? r.pendientes.map(function(pe){ return '<div class="kv"><span class="k">'+esc(pe.texto)+'</span><span class="v">'+(pe.fecha?esc(isoToLabel(pe.fecha)):'—')+'</span></div>'; }).join('') : '<div class="empty-note">Sin pendientes registrados.</div>';
+  var objLabel = objetivoLabel(p);
+  var objetivoHtml = objLabel ? '<span class="chip">'+esc(objLabel)+'</span>' : '<span class="empty-note">Sin objetivo registrado (ver Editar datos personales).</span>';
+  var problemas = problemasActivosDe(p);
+  var pendientes = pendientesDe(p);
+  var problemasRows = problemas.length ? problemas.map(function(pr){ return '<div class="kv"><span class="k">'+esc(pr.nombre)+'</span><span class="v">'+tonePill(pr.tone,pr.estado)+'</span></div>'; }).join('') : '<div class="empty-note">Sin síntomas marcados como presentes en Revisión por sistemas.</div>';
+  var pendientesRows = pendientes.length ? pendientes.map(function(pe){ return '<div class="kv"><span class="k">'+esc(pe.texto)+'</span><span class="v">'+(pe.fecha?esc(isoToLabel(pe.fecha)):'—')+'</span></div>'; }).join('') : '<div class="empty-note">Sin antecedentes pendientes por documentar.</div>';
 
   box.innerHTML =
     '<div class="section-title"><h3>Situación general</h3><button class="btn btn-sm" id="btn-edit-resumen">Editar resumen</button></div>' +
     '<div class="card free-text">'+ (isBlank(r.situacion) ? '<span class="empty-note">Por documentar. Use "Editar resumen" para registrar la situación general del paciente.</span>' : '<p>'+esc(r.situacion)+'</p>') +'</div>' +
-    '<div class="section-title"><h3>Objetivos</h3></div>' +
-    '<div class="card chip-row">'+objetivosChips+'</div>' +
+    '<div class="section-title"><h3>Objetivo</h3><span class="field-hint">Se edita desde "Editar datos personales"</span></div>' +
+    '<div class="card chip-row">'+objetivoHtml+'</div>' +
     '<div class="card-grid" style="margin-top:14px;">' +
-      '<div class="card"><h4>Problemas activos</h4>'+problemasRows+'</div>' +
-      '<div class="card"><h4>Pendientes</h4>'+pendientesRows+'</div>' +
+      '<div class="card"><h4>Problemas activos <span class="field-hint">(síntomas presentes)</span></h4>'+problemasRows+'</div>' +
+      '<div class="card"><h4>Pendientes <span class="field-hint">(antecedentes por documentar)</span></h4>'+pendientesRows+'</div>' +
     '</div>';
   document.getElementById('btn-edit-resumen').addEventListener('click', function(){ openResumenModal(p); });
 }
@@ -1549,8 +1576,8 @@ function renderAntecedentes(p){
 }
 
 /* ================= nutrición ================= */
-var NUTRI_PATRON_FIELDS = [['comidas','N.º de comidas al día'],['horarios','Horarios habituales'],['regularidad','Regularidad'],['fuera','Comidas fuera de casa'],['preparacion','Quién prepara la comida']];
-var NUTRI_CALIDAD_FIELDS = [['fv','Frutas y verduras'],['proteinas','Proteínas'],['cereales','Cereales'],['grasas','Calidad de grasas'],['fibra','Fibra'],['ultraprocesados','Ultraprocesados'],['azucares','Azúcares añadidos'],['bebidas','Bebidas habituales']];
+var NUTRI_PATRON_FIELDS = [['comidas','N.º de comidas al día'],['horarios','Horarios habituales'],['fuera','Comidas fuera de casa'],['preparacion','Quién prepara la comida'],['noLeGusta','Alimentos que no le gustan'],['preferencia','Alimentos de preferencia']];
+var NUTRI_CALIDAD_FIELDS = [['desayuno','Desayuno'],['mediaManana','Media mañana'],['almuerzo','Almuerzo'],['mediaTarde','Media tarde'],['cena','Cena']];
 var NUTRI_CONDUCTA_FIELDS = [['hambre','Reconocimiento de hambre'],['saciedad','Reconocimiento de saciedad'],['velocidad','Velocidad al comer'],['atencion','Atención al comer'],['ansiedad','Comer por ansiedad'],['aburrimiento','Comer por aburrimiento'],['antojos','Antojos frecuentes'],['nocturna','Ingesta nocturna']];
 
 function kvSection(fields, data){
@@ -1598,10 +1625,10 @@ function renderNutricion(p){
 
 /* ================= hábitos ================= */
 var HABIT_FIELDS = {
-  actividad: [['tipo','Tipo de actividad'],['frecuencia','Frecuencia'],['duracion','Duración'],['intensidad','Intensidad'],['pasos','Pasos diarios aprox.'],['sedentarismo','Tiempo sedentario']],
+  actividad: [['tipo','Tipo de actividad'],['frecuencia','Frecuencia'],['duracion','Duración'],['sedentarismo','Tiempo sedentario']],
   sueno: [['acostarse','Hora de acostarse'],['levantarse','Hora de levantarse'],['duracion','Duración total'],['calidad','Calidad percibida'],['latencia','Latencia para dormir'],['somnolencia','Somnolencia diurna']],
   estres: [['nivel','Nivel percibido'],['fuentes','Fuentes principales'],['estrategias','Estrategias de manejo']],
-  hidratacion: [['cantidad','Cantidad diaria'],['tipo','Tipo de líquidos'],['distribucion','Distribución en el día']],
+  hidratacion: [['cantidad','Cantidad de agua al día'],['tipo','Otro tipo de hidratación']],
   sustancias: [['alcohol','Alcohol'],['tabaco','Tabaco'],['otras','Otras sustancias'],['pantallas','Uso de pantallas antes de dormir']]
 };
 function renderHabitDomain(p, domain){
@@ -1673,6 +1700,7 @@ function renderAntropometria(p){
     '<div class="kv"><span class="k">IMC (calculado)</span><span class="v">'+(latest.imc!=null?latest.imc:'—')+'</span></div>' +
     '<div class="kv"><span class="k">Circunf. abdominal</span><span class="v">'+docText(latest.abdominal)+'</span></div>' +
     '<div class="kv"><span class="k">Cintura / cadera</span><span class="v">'+docText(latest.cintura)+' / '+docText(latest.cadera)+'</span></div>' +
+    '<div class="kv"><span class="k">Brazo / muslo</span><span class="v">'+docText(latest.brazo)+' / '+docText(latest.muslo)+'</span></div>' +
     '<div class="kv"><span class="k">% graso / % muscular</span><span class="v">'+docText(latest.graso)+' / '+docText(latest.muscular)+'</span></div>' +
     (latest.observaciones ? '<div class="kv"><span class="k">Observaciones</span><span class="v">'+esc(latest.observaciones)+'</span></div>' : '') +
     '</div>' +
@@ -1687,9 +1715,9 @@ function renderAntropometria(p){
   ) : '<div class="cta-empty"><span>Sin mediciones antropométricas registradas.</span></div>';
 
   var histRows = hist.length ? hist.slice().reverse().map(function(m){
-    return '<tr><td>'+esc(isoToLabel(m.fecha))+'</td><td>'+(m.peso!=null?m.peso:'—')+'</td><td>'+(m.talla!=null?m.talla:'—')+'</td><td>'+(m.imc!=null?m.imc:'—')+'</td><td>'+docText(m.abdominal)+'</td>' +
+    return '<tr><td>'+esc(isoToLabel(m.fecha))+'</td><td>'+(m.peso!=null?m.peso:'—')+'</td><td>'+(m.talla!=null?m.talla:'—')+'</td><td>'+(m.imc!=null?m.imc:'—')+'</td><td>'+docText(m.abdominal)+'</td><td>'+docText(m.brazo)+'</td><td>'+docText(m.muslo)+'</td>' +
       '<td class="row-actions"><button class="icon-btn danger del-antro" data-id="'+m.id+'" title="Eliminar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button></td></tr>';
-  }).join('') : '<tr><td colspan="6" class="empty-note">Sin histórico.</td></tr>';
+  }).join('') : '<tr><td colspan="8" class="empty-note">Sin histórico.</td></tr>';
 
   var vitalsRows = vitalsHist.length ? vitalsHist.slice().reverse().map(function(v){
     return '<tr><td>'+esc(isoToLabel(v.fecha))+'</td><td>'+docText(v.fc)+'</td><td>'+docText(v.ta)+'</td><td>'+docText(v.temp)+'</td><td>'+docText(v.spo2)+'</td>' +
@@ -1700,7 +1728,7 @@ function renderAntropometria(p){
     '<div class="section-title" style="margin-top:0;"><h3>Antropometría y signos vitales</h3><div style="display:flex; gap:8px;"><button class="btn btn-sm" id="btn-add-antro">＋ Añadir medición</button><button class="btn btn-sm" id="btn-add-vitals">＋ Añadir signos vitales</button></div></div>' +
     summary +
     '<div class="section-title"><h3 style="font-size:14px;">Histórico de mediciones</h3></div>' +
-    '<div class="table-wrap"><table class="mini-table"><thead><tr><th>Fecha</th><th>Peso</th><th>Talla</th><th>IMC</th><th>Abdominal</th><th></th></tr></thead><tbody>'+histRows+'</tbody></table></div>' +
+    '<div class="table-wrap"><table class="mini-table"><thead><tr><th>Fecha</th><th>Peso</th><th>Talla</th><th>IMC</th><th>Abdominal</th><th>Brazo</th><th>Muslo</th><th></th></tr></thead><tbody>'+histRows+'</tbody></table></div>' +
     '<div class="section-title"><h3 style="font-size:14px;">Histórico de signos vitales</h3></div>' +
     '<div class="table-wrap"><table class="mini-table"><thead><tr><th>Fecha</th><th>FC</th><th>TA</th><th>Temp.</th><th>SpO2</th><th></th></tr></thead><tbody>'+vitalsRows+'</tbody></table></div>';
 
@@ -1797,25 +1825,18 @@ function renderMedicacion(p){ renderMeds(p); renderSupps(p); }
 function readConsultForm(){
   return {
     motivo: document.getElementById('c-motivo').value.trim(),
-    expectativas: document.getElementById('c-expectativas').value.trim(),
     objetivos: document.getElementById('c-objetivos').value.trim(),
-    prioridades: document.getElementById('c-prioridades').value.trim(),
-    inicio: document.getElementById('c-inicio').value.trim(),
-    frecuencia: document.getElementById('c-frecuencia').value.trim(),
-    desencadenantes: document.getElementById('c-desencadenantes').value.trim(),
-    alivian: document.getElementById('c-alivian').value.trim(),
+    historia: document.getElementById('c-historia').value.trim(),
     notas: document.getElementById('c-notas').value.trim()
   };
 }
 function fillConsultForm(c){
   document.getElementById('c-motivo').value = c.motivo||'';
-  document.getElementById('c-expectativas').value = c.expectativas||'';
   document.getElementById('c-objetivos').value = c.objetivos||'';
-  document.getElementById('c-prioridades').value = c.prioridades||'';
-  document.getElementById('c-inicio').value = c.inicio||'';
-  document.getElementById('c-frecuencia').value = c.frecuencia||'';
-  document.getElementById('c-desencadenantes').value = c.desencadenantes||'';
-  document.getElementById('c-alivian').value = c.alivian||'';
+  // compat: consultas antiguas guardaban inicio/frecuencia/desencadenantes/alivian
+  // por separado; si "historia" aún no existe, se muestran unidas para no perder
+  // lo ya documentado.
+  document.getElementById('c-historia').value = c.historia || [c.inicio,c.frecuencia,c.desencadenantes,c.alivian].filter(Boolean).join(' | ') || '';
   document.getElementById('c-notas').value = c.notas||'';
   document.getElementById('field-c-motivo').classList.remove('invalid');
 }
@@ -1970,6 +1991,25 @@ function validateRequired(ids){
   });
   return ok;
 }
+function edadDisplayHtml(id){
+  return '<div class="field"><label>Edad</label><input type="text" id="'+id+'" value="" disabled placeholder="—"></div>';
+}
+function wireEdadDisplay(fnacId, edadId){
+  var fnacEl = document.getElementById(fnacId), edadEl = document.getElementById(edadId);
+  function update(){ var age = ageFromDob(fnacEl.value); edadEl.value = age!=null ? (age+' años') : ''; }
+  fnacEl.addEventListener('change', update);
+  fnacEl.addEventListener('input', update);
+  update();
+}
+function objetivoFieldHtml(idPrefix, selected, otroValue){
+  return '<div class="field"><label>Objetivo</label><select id="'+idPrefix+'-objetivo">'+OBJETIVO_OPTIONS.map(function(o){ return '<option value="'+esc(o.v)+'"'+(o.v===selected?' selected':'')+'>'+esc(o.l)+'</option>'; }).join('')+'</select></div>' +
+    '<div class="field" id="field-'+idPrefix+'-objetivo-otro" style="'+(selected==='otro'?'':'display:none;')+'"><label>Especificar objetivo</label><input type="text" id="'+idPrefix+'-objetivo-otro" value="'+esc(otroValue||'')+'"></div>';
+}
+function wireObjetivoField(idPrefix){
+  var sel = document.getElementById(idPrefix+'-objetivo');
+  var wrap = document.getElementById('field-'+idPrefix+'-objetivo-otro');
+  sel.addEventListener('change', function(){ wrap.style.display = sel.value==='otro' ? '' : 'none'; });
+}
 
 /* ================= paciente nuevo ================= */
 function openNewPatientModal(){
@@ -1979,13 +2019,18 @@ function openNewPatientModal(){
       fieldHtml('np-nombre','Nombre','','text',true) +
       fieldHtml('np-apellidos','Apellidos','','text',true) +
       fieldHtml('np-fnac','Fecha de nacimiento','','date') +
+      edadDisplayHtml('np-edad') +
       fieldHtml('np-sexo','Sexo','','select',false,{options:[{v:'',l:'Seleccionar…'},{v:'Femenino',l:'Femenino'},{v:'Masculino',l:'Masculino'},{v:'Otro',l:'Otro'}]}) +
+      fieldHtml('np-pais','País','') +
       fieldHtml('np-documento','Documento de identidad','') +
       fieldHtml('np-telefono','Teléfono','') +
       fieldHtml('np-email','Correo electrónico','','email') +
+      objetivoFieldHtml('np','','') +
     '</div>' +
     '<div class="modal-actions"><button class="btn btn-ghost" id="np-cancel">Cancelar</button><div class="right-actions"><button class="btn btn-primary" id="np-save">Crear paciente</button></div></div>',
     function(){
+      wireEdadDisplay('np-fnac','np-edad');
+      wireObjetivoField('np');
       document.getElementById('np-cancel').addEventListener('click', closeModal);
       document.getElementById('np-save').addEventListener('click', function(){
         if(!validateRequired(['np-nombre','np-apellidos'])) return;
@@ -1994,9 +2039,12 @@ function openNewPatientModal(){
           apellidos: document.getElementById('np-apellidos').value.trim(),
           fechaNacimiento: document.getElementById('np-fnac').value,
           sexo: document.getElementById('np-sexo').value,
+          pais: document.getElementById('np-pais').value.trim(),
           documento: document.getElementById('np-documento').value.trim(),
           telefono: document.getElementById('np-telefono').value.trim(),
-          email: document.getElementById('np-email').value.trim()
+          email: document.getElementById('np-email').value.trim(),
+          objetivo: document.getElementById('np-objetivo').value,
+          objetivoOtro: document.getElementById('np-objetivo-otro').value.trim()
         });
         closeModal();
         renderSidebarRecent();
@@ -2017,15 +2065,20 @@ function openEditPersonalModal(p){
       fieldHtml('ep-nombre','Nombre', d.nombre,'text',true) +
       fieldHtml('ep-apellidos','Apellidos', d.apellidos,'text',true) +
       fieldHtml('ep-fnac','Fecha de nacimiento', d.fechaNacimiento,'date') +
+      edadDisplayHtml('ep-edad') +
       fieldHtml('ep-sexo','Sexo / género', d.sexo,'select',false,{options:[{v:'',l:'Seleccionar…'},{v:'Femenino',l:'Femenino'},{v:'Masculino',l:'Masculino'},{v:'Otro',l:'Otro'}]}) +
+      fieldHtml('ep-pais','País', d.pais) +
       fieldHtml('ep-documento','Documento / identificador', d.documento) +
       fieldHtml('ep-telefono','Teléfono', d.telefono) +
       fieldHtml('ep-email','Correo electrónico', d.email,'email') +
       fieldHtml('ep-direccion','Dirección', d.direccion) +
       fieldHtml('ep-contacto','Contacto de emergencia', d.contactoEmergencia) +
+      objetivoFieldHtml('ep', d.objetivo, d.objetivoOtro) +
     '</div>' +
     '<div class="modal-actions"><button class="btn btn-ghost" id="ep-cancel">Cancelar</button><div class="right-actions"><button class="btn btn-primary" id="ep-save">Guardar cambios</button></div></div>',
     function(){
+      wireEdadDisplay('ep-fnac','ep-edad');
+      wireObjetivoField('ep');
       document.getElementById('ep-cancel').addEventListener('click', closeModal);
       document.getElementById('ep-save').addEventListener('click', function(){
         if(!validateRequired(['ep-nombre','ep-apellidos'])) return;
@@ -2034,10 +2087,13 @@ function openEditPersonalModal(p){
           apellidos: document.getElementById('ep-apellidos').value.trim(),
           fechaNacimiento: document.getElementById('ep-fnac').value,
           sexo: document.getElementById('ep-sexo').value,
+          pais: document.getElementById('ep-pais').value.trim(),
           documento: document.getElementById('ep-documento').value.trim(),
           telefono: document.getElementById('ep-telefono').value.trim(),
           email: document.getElementById('ep-email').value.trim(),
           direccion: document.getElementById('ep-direccion').value.trim(),
+          objetivo: document.getElementById('ep-objetivo').value,
+          objetivoOtro: document.getElementById('ep-objetivo-otro').value.trim(),
           contactoEmergencia: document.getElementById('ep-contacto').value.trim()
         });
         closeModal();
@@ -2109,7 +2165,7 @@ function openAntecedenteModal(p, categoria, rec){
       {v:STATUS.NOT_APPLICABLE,l:STATUS_LABEL[STATUS.NOT_APPLICABLE]}
     ]}) +
     fieldHtml('an-desc','Descripción', rec?rec.descripcion:'','textarea') +
-    fieldHtml('an-fecha','Fecha', rec?rec.fecha:todayISO(),'date') +
+    (categoria==='alergias' ? '' : fieldHtml('an-fecha','Fecha', rec?rec.fecha:todayISO(),'date')) +
     fieldHtml('an-obs','Observaciones', rec?rec.observaciones:'','textarea') +
     '<div class="modal-actions">' + (isEdit ? '<button class="btn btn-danger" id="an-delete">Eliminar</button>' : '<span></span>') + '<div class="right-actions"><button class="btn btn-ghost" id="an-cancel">Cancelar</button><button class="btn btn-primary" id="an-save">Guardar</button></div></div>',
     function(box){
@@ -2122,7 +2178,8 @@ function openAntecedenteModal(p, categoria, rec){
         showToast('Antecedente eliminado');
       });
       box.querySelector('#an-save').addEventListener('click', function(){
-        var data = { categoria: categoria, status: box.querySelector('#an-status').value, descripcion: box.querySelector('#an-desc').value.trim(), fecha: box.querySelector('#an-fecha').value, observaciones: box.querySelector('#an-obs').value.trim() };
+        var fechaEl = box.querySelector('#an-fecha');
+        var data = { categoria: categoria, status: box.querySelector('#an-status').value, descripcion: box.querySelector('#an-desc').value.trim(), fecha: fechaEl ? fechaEl.value : '', observaciones: box.querySelector('#an-obs').value.trim() };
         if(isEdit) AntecedenteService.update(p, rec.id, data); else AntecedenteService.add(p, data);
         closeModal(); renderAntecedentes(p); renderFuncProfile(p);
         showToast('Antecedente guardado');
@@ -2233,6 +2290,8 @@ function openAntroModal(p){
       fieldHtml('am-abdominal','Circunf. abdominal (cm)','','number') +
       fieldHtml('am-cintura','Cintura (cm)','','number') +
       fieldHtml('am-cadera','Cadera (cm)','','number') +
+      fieldHtml('am-brazo','Circunf. brazo (cm)','','number') +
+      fieldHtml('am-muslo','Circunf. muslo (cm)','','number') +
       fieldHtml('am-graso','% graso','','text') +
       fieldHtml('am-muscular','% muscular','','text') +
     '</div>' +
@@ -2253,6 +2312,7 @@ function openAntroModal(p){
         AntropometriaService.addMedicion(p, {
           fecha: box.querySelector('#am-fecha').value, peso: box.querySelector('#am-peso').value, talla: box.querySelector('#am-talla').value,
           abdominal: box.querySelector('#am-abdominal').value, cintura: box.querySelector('#am-cintura').value, cadera: box.querySelector('#am-cadera').value,
+          brazo: box.querySelector('#am-brazo').value, muslo: box.querySelector('#am-muslo').value,
           graso: box.querySelector('#am-graso').value, muscular: box.querySelector('#am-muscular').value, observaciones: box.querySelector('#am-obs').value.trim()
         });
         closeModal(); renderAntropometria(p); renderFuncProfile(p); renderPatientHeader(p);
@@ -2358,63 +2418,20 @@ function openMedModal(p, kind, rec){
   );
 }
 
-/* ================= resumen clínico ================= */
+/* ================= resumen clínico =================
+   Solo "Situación general" es texto libre editable aquí. Objetivo, Problemas
+   activos y Pendientes se calculan solos a partir de datos personales,
+   revisión por sistemas y antecedentes (ver problemasActivosDe/pendientesDe). */
 function openResumenModal(p){
   var r = p.resumen;
-  var problemasHtml = (r.problemas||[]).map(function(pr,i){
-    return '<div class="form-grid" data-prob-row="'+i+'" style="margin-bottom:8px;"><input type="text" class="prob-nombre" placeholder="Problema" value="'+esc(pr.nombre)+'"><input type="text" class="prob-estado" placeholder="Estado (p.ej. Activo)" value="'+esc(pr.estado)+'"></div>';
-  }).join('');
-  var pendientesHtml = (r.pendientes||[]).map(function(pe,i){
-    return '<div class="form-grid" data-pend-row="'+i+'" style="margin-bottom:8px;"><input type="text" class="pend-texto" placeholder="Pendiente" value="'+esc(pe.texto)+'"><input type="date" class="pend-fecha" value="'+esc(pe.fecha||'')+'"></div>';
-  }).join('');
   openModal(
-    '<h3>Editar resumen clínico</h3>' +
+    '<h3>Editar situación general</h3><div class="modal-sub">Objetivo, problemas activos y pendientes se calculan automáticamente desde otras pestañas y no se editan aquí.</div>' +
     fieldHtml('rs-situacion','Situación general', r.situacion, 'textarea', false, {rows:4}) +
-    '<div class="field"><label>Objetivos</label>'+tagEditorHtml(r.objetivos,'resumen-objetivos')+'</div>' +
-    '<div class="field"><label>Problemas activos</label><div id="rs-problemas">'+problemasHtml+'</div><button class="btn btn-sm" id="rs-add-problema" type="button">＋ Añadir problema</button></div>' +
-    '<div class="field"><label>Pendientes de seguimiento</label><div id="rs-pendientes">'+pendientesHtml+'</div><button class="btn btn-sm" id="rs-add-pendiente" type="button">＋ Añadir pendiente</button></div>' +
-    '<div class="modal-actions"><button class="btn btn-ghost" id="rs-cancel">Cancelar</button><div class="right-actions"><button class="btn btn-primary" id="rs-save">Guardar resumen</button></div></div>',
+    '<div class="modal-actions"><button class="btn btn-ghost" id="rs-cancel">Cancelar</button><div class="right-actions"><button class="btn btn-primary" id="rs-save">Guardar</button></div></div>',
     function(box){
-      var objetivos = clone(r.objetivos||[]);
-      function renderTagBox(){
-        box.querySelector('[data-list="resumen-objetivos"]').outerHTML = tagEditorHtml(objetivos,'resumen-objetivos');
-        wireTagBox();
-      }
-      function wireTagBox(){
-        box.querySelectorAll('.rm-tag').forEach(function(btn){
-          btn.addEventListener('click', function(){ objetivos = objetivos.filter(function(o){ return o.id!==btn.getAttribute('data-id'); }); renderTagBox(); });
-        });
-        var input = box.querySelector('[data-addto="resumen-objetivos"]');
-        if(input) input.addEventListener('keydown', function(e){
-          if(e.key==='Enter'){ e.preventDefault(); if(e.target.value.trim()){ objetivos.push({id:uid('tag'), texto:e.target.value.trim()}); renderTagBox(); } }
-        });
-      }
-      wireTagBox();
-      box.querySelector('#rs-add-problema').addEventListener('click', function(){
-        var row = el('div','form-grid'); row.style.marginBottom='8px';
-        row.innerHTML = '<input type="text" class="prob-nombre" placeholder="Problema"><input type="text" class="prob-estado" placeholder="Estado (p.ej. Activo)">';
-        box.querySelector('#rs-problemas').appendChild(row);
-      });
-      box.querySelector('#rs-add-pendiente').addEventListener('click', function(){
-        var row = el('div','form-grid'); row.style.marginBottom='8px';
-        row.innerHTML = '<input type="text" class="pend-texto" placeholder="Pendiente"><input type="date" class="pend-fecha">';
-        box.querySelector('#rs-pendientes').appendChild(row);
-      });
       box.querySelector('#rs-cancel').addEventListener('click', closeModal);
       box.querySelector('#rs-save').addEventListener('click', function(){
-        var problemas = [];
-        box.querySelectorAll('#rs-problemas [data-prob-row], #rs-problemas > div').forEach(function(row){
-          var nombre = row.querySelector('.prob-nombre').value.trim();
-          var estado = row.querySelector('.prob-estado').value.trim();
-          if(nombre) problemas.push({ id: uid('prob'), nombre: nombre, estado: estado||'Activo', tone: 'warn' });
-        });
-        var pendientes = [];
-        box.querySelectorAll('#rs-pendientes [data-pend-row], #rs-pendientes > div').forEach(function(row){
-          var texto = row.querySelector('.pend-texto').value.trim();
-          var fecha = row.querySelector('.pend-fecha').value;
-          if(texto) pendientes.push({ id: uid('pend'), texto: texto, fecha: fecha });
-        });
-        ResumenService.update(p, { situacion: box.querySelector('#rs-situacion').value.trim(), objetivos: objetivos, problemas: problemas, pendientes: pendientes });
+        ResumenService.update(p, { situacion: box.querySelector('#rs-situacion').value.trim() });
         closeModal(); renderResumen(p); renderPatientHeader(p);
         showToast('Resumen actualizado');
       });
@@ -2474,10 +2491,6 @@ function updateAiContext(){
   if(!p){ ctx.textContent = 'Seleccione un paciente para activar el asistente.'; return; }
   ctx.textContent = 'Analizando historia de '+fullName(p)+' · actualizado '+timeAgo(p.timeline[0]?p.timeline[0].ts:Date.now());
 }
-function joinOr(list, fallback){
-  var arr = (list||[]).map(function(x){ return typeof x==='string' ? x : x.texto; }).filter(Boolean);
-  return arr.length ? arr.join(', ') : fallback;
-}
 
 function buildOrganize(p){
   var draft = ConsultaService.getDraft(p);
@@ -2494,7 +2507,7 @@ function buildSoap(p){
 }
 function buildResumenPaciente(p){
   return '<p>Hola '+esc((p.personal.nombre||'').split(' ')[0]||'')+', este es un resumen de tu situación actual: '+esc(docPlain(p.resumen.situacion,'aún estamos documentando tu situación general'))+'.</p>' +
-    '<p>Objetivos actuales: '+esc(joinOr(p.resumen.objetivos,'por definir'))+'.</p>';
+    '<p>Objetivo actual: '+esc(objetivoLabel(p)||'por definir')+'.</p>';
 }
 function buildHabitsSummary(p){
   var h = p.habitos;
@@ -2508,7 +2521,7 @@ function buildComparison(p){
     '<p>Motivo anterior: '+esc(docPlain(a.motivo))+' → Motivo actual: '+esc(docPlain(b.motivo))+'</p>';
 }
 function buildPrepare(p){
-  var pend = p.resumen.pendientes||[];
+  var pend = pendientesDe(p);
   return '<p>Para la próxima consulta de '+esc(fullName(p))+' considere revisar: '+ (pend.length? esc(pend.map(function(x){return x.texto;}).join('; ')) : 'no hay pendientes explícitos registrados, revise la línea temporal reciente') +'.</p>';
 }
 
