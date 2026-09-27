@@ -186,6 +186,9 @@ td{ padding:9px 10px; border-top:1px solid var(--border); vertical-align:middle;
 .field label{ font-size:11.5px; font-weight:600; color:var(--text-muted); }
 .field .req{ color:var(--bad); }
 .field textarea, .field input, .field select{ border:1px solid var(--border); border-radius:8px; padding:9px 11px; font-size:13.5px; background:var(--surface); color:var(--text); font-family:inherit; resize:vertical; }
+.date-compound{ display:flex; gap:6px; }
+.date-compound .date-part{ border:1px solid var(--border); border-radius:8px; padding:9px 6px; font-size:13.5px; background:var(--surface); color:var(--text); font-family:inherit; flex:1; min-width:0; }
+.date-compound .date-part-year{ flex:1.3; }
 .field textarea:focus, .field input:focus, .field select:focus{ outline:2px solid var(--accent); outline-offset:1px; }
 .field.invalid textarea, .field.invalid input, .field.invalid select{ border-color:var(--bad); }
 .field-error{ color:var(--bad); font-size:11.5px; display:none; }
@@ -390,17 +393,11 @@ td{ padding:9px 10px; border-top:1px solid var(--border); vertical-align:middle;
           <div class="section-title"><h3 id="consulta-heading">Consulta actual</h3><span class="pill pill-neutral" id="consulta-estado-pill">Borrador</span></div>
           <div class="consult-block">
             <h4><span class="letter">A</span> Motivo de consulta</h4>
-            <div class="form-grid">
-              <div class="field" id="field-c-motivo"><label>Motivo principal <span class="req">*</span></label><textarea rows="2" id="c-motivo"></textarea><div class="field-error">Este campo es obligatorio para finalizar la consulta.</div></div>
-              <div class="field"><label>Objetivos</label><input type="text" id="c-objetivos"></div>
-            </div>
+            <div class="field" id="field-c-motivo"><label>Motivo principal <span class="req">*</span></label><textarea rows="2" id="c-motivo"></textarea><div class="field-error">Este campo es obligatorio para finalizar la consulta.</div></div>
           </div>
           <div class="consult-block">
             <h4><span class="letter">B</span> Historia del problema actual</h4>
-            <div class="form-grid">
-              <div class="field" style="grid-column:1/-1;"><label>Historia del problema actual</label><textarea rows="3" id="c-historia" placeholder="Inicio, frecuencia, factores desencadenantes y qué lo alivia, en un solo párrafo."></textarea></div>
-              <div class="field" style="grid-column:1/-1;"><label>Notas libres de la consulta</label><textarea rows="4" id="c-notas" placeholder="Escriba aquí en lenguaje natural — el asistente de IA puede organizarlas."></textarea></div>
-            </div>
+            <div class="field"><textarea rows="4" id="c-historia" placeholder="Inicio, frecuencia, factores desencadenantes, qué lo alivia y demás notas de la consulta, en un solo texto."></textarea></div>
           </div>
           <div class="consult-block">
             <h4><span class="letter">C</span> Revisión por sistemas y examen</h4>
@@ -719,7 +716,7 @@ var PatientService = {
       },
       antecedentes: [],
       symptoms: clone(SYMPTOM_TEMPLATE),
-      nutricion: { patron:{comidas:'',horarios:'',fuera:'',preparacion:'',noLeGusta:'',preferencia:''}, calidad:{desayuno:'',mediaManana:'',almuerzo:'',mediaTarde:'',cena:''}, conducta:{hambre:'',saciedad:'',velocidad:'',atencion:'',ansiedad:'',aburrimiento:'',antojos:'',nocturna:''}, diario:[] },
+      nutricion: { patron:{comidas:'',horarios:'',fuera:'',preparacion:'',noLeGusta:'',preferencia:''}, calidad:{fv:'',proteinas:'',cereales:'',grasas:'',fibra:'',ultraprocesados:'',azucares:'',bebidas:''}, conducta:{hambre:'',saciedad:'',velocidad:'',atencion:'',ansiedad:'',aburrimiento:'',antojos:'',nocturna:''}, diario:[] },
       habitos: { actividad:{tipo:'',frecuencia:'',duracion:'',sedentarismo:''}, sueno:{acostarse:'',levantarse:'',duracion:'',calidad:'',latencia:'',somnolencia:''}, estres:{nivel:'',fuentes:'',estrategias:''}, hidratacion:{cantidad:'',tipo:''}, sustancias:{alcohol:'',tabaco:'',otras:'',pantallas:''}, objetivos:[], barreras:[], facilitadores:[], seguimiento:[] },
       medicionesAntropometricas: [],
       signosVitales: [],
@@ -926,7 +923,7 @@ var MedicacionService = {
 /* ================= ConsultaService ================= */
 var ConsultaService = {
   start: function(p){
-    var rec = { id: uid('cons'), fecha: todayISO(), hora: new Date().toTimeString().slice(0,5), profesional:'Dra. Erika Abril', motivo:'', objetivos:'', historia:'', notas:'', evaluacion:'', plan:'', estado:'borrador', creadoEn: Date.now(), actualizadoEn: Date.now() };
+    var rec = { id: uid('cons'), fecha: todayISO(), hora: new Date().toTimeString().slice(0,5), profesional:'Dra. Erika Abril', motivo:'', historia:'', notas:'', evaluacion:'', plan:'', estado:'borrador', creadoEn: Date.now(), actualizadoEn: Date.now() };
     p.consultas.unshift(rec);
     persist();
     return rec;
@@ -1596,7 +1593,7 @@ function renderAntecedentes(p){
 
 /* ================= nutrición ================= */
 var NUTRI_PATRON_FIELDS = [['comidas','N.º de comidas al día'],['horarios','Horarios habituales'],['fuera','Comidas fuera de casa'],['preparacion','Quién prepara la comida'],['noLeGusta','Alimentos que no le gustan'],['preferencia','Alimentos de preferencia']];
-var NUTRI_CALIDAD_FIELDS = [['desayuno','Desayuno'],['mediaManana','Media mañana'],['almuerzo','Almuerzo'],['mediaTarde','Media tarde'],['cena','Cena']];
+var NUTRI_CALIDAD_FIELDS = [['fv','Frutas y verduras'],['proteinas','Proteínas'],['cereales','Cereales'],['grasas','Calidad de grasas'],['fibra','Fibra'],['ultraprocesados','Ultraprocesados'],['azucares','Azúcares añadidos'],['bebidas','Bebidas habituales']];
 var NUTRI_CONDUCTA_FIELDS = [['hambre','Reconocimiento de hambre'],['saciedad','Reconocimiento de saciedad'],['velocidad','Velocidad al comer'],['atencion','Atención al comer'],['ansiedad','Comer por ansiedad'],['aburrimiento','Comer por aburrimiento'],['antojos','Antojos frecuentes'],['nocturna','Ingesta nocturna']];
 
 function kvSection(fields, data){
@@ -1844,19 +1841,15 @@ function renderMedicacion(p){ renderMeds(p); renderSupps(p); }
 function readConsultForm(){
   return {
     motivo: document.getElementById('c-motivo').value.trim(),
-    objetivos: document.getElementById('c-objetivos').value.trim(),
-    historia: document.getElementById('c-historia').value.trim(),
-    notas: document.getElementById('c-notas').value.trim()
+    historia: document.getElementById('c-historia').value.trim()
   };
 }
 function fillConsultForm(c){
   document.getElementById('c-motivo').value = c.motivo||'';
-  document.getElementById('c-objetivos').value = c.objetivos||'';
   // compat: consultas antiguas guardaban inicio/frecuencia/desencadenantes/alivian
-  // por separado; si "historia" aún no existe, se muestran unidas para no perder
-  // lo ya documentado.
-  document.getElementById('c-historia').value = c.historia || [c.inicio,c.frecuencia,c.desencadenantes,c.alivian].filter(Boolean).join(' | ') || '';
-  document.getElementById('c-notas').value = c.notas||'';
+  // y notas libres por separado; si "historia" aún no existe, se muestran unidas
+  // para no perder lo ya documentado.
+  document.getElementById('c-historia').value = c.historia || [c.inicio,c.frecuencia,c.desencadenantes,c.alivian,c.notas].filter(Boolean).join(' | ') || '';
   document.getElementById('field-c-motivo').classList.remove('invalid');
 }
 var ACTIVE_CONSULT_ID = null;
@@ -1994,6 +1987,7 @@ document.getElementById('modal-scrim').addEventListener('click', function(e){
 function fieldHtml(id,label,value,type,required,extra){
   type = type||'text';
   var reqMark = required ? ' <span class="req">*</span>' : '';
+  if(type==='date') return dateFieldHtml(id, label, value, required);
   var inner = type==='textarea'
     ? '<textarea id="'+id+'" rows="'+(extra&&extra.rows||3)+'">'+esc(value||'')+'</textarea>'
     : (type==='select'
@@ -2001,6 +1995,50 @@ function fieldHtml(id,label,value,type,required,extra){
       : '<input type="'+type+'" id="'+id+'" value="'+esc(value==null?'':value)+'">');
   return '<div class="field" id="field-'+id+'"><label>'+esc(label)+reqMark+'</label>'+inner+'<div class="field-error">Este campo es obligatorio.</div></div>';
 }
+/* ================= campo de fecha compuesto (Día/Mes/Año) =================
+   El <input type="date"> nativo obliga a hacer clic muchas veces (o usar la
+   ruedita) para retroceder décadas — muy lento para una fecha de nacimiento
+   de, por ejemplo, 1960. Estos tres <select> permiten saltar directo al año
+   (con el propio buscador por tecleo del <select>). Un <input type="hidden">
+   con el mismo id mantiene el valor ISO (yyyy-mm-dd) para que el resto del
+   código (que lee/escribe "#id".value) no tenga que cambiar. */
+function dateFieldHtml(id, label, value, required){
+  var reqMark = required ? ' <span class="req">*</span>' : '';
+  var parts = (value||'').split('-');
+  var y = parts.length===3 ? parts[0] : '', m = parts.length===3 ? parts[1] : '', d = parts.length===3 ? parts[2] : '';
+  var days = '<option value="">Día</option>';
+  for(var i=1;i<=31;i++){ var v=String(i).padStart(2,'0'); days += '<option value="'+v+'"'+(v===d?' selected':'')+'>'+i+'</option>'; }
+  var months = '<option value="">Mes</option>';
+  MESES.forEach(function(mLabel,idx){ var v=String(idx+1).padStart(2,'0'); months += '<option value="'+v+'"'+(v===m?' selected':'')+'>'+esc(mLabel.charAt(0).toUpperCase()+mLabel.slice(1))+'</option>'; });
+  var thisYear = new Date().getFullYear();
+  var years = '<option value="">Año</option>';
+  for(var yy=thisYear; yy>=1900; yy--){ years += '<option value="'+yy+'"'+(String(yy)===y?' selected':'')+'>'+yy+'</option>'; }
+  return '<div class="field" id="field-'+id+'"><label>'+esc(label)+reqMark+'</label>' +
+    '<div class="date-compound">' +
+      '<select class="date-part" id="'+id+'-d" aria-label="Día">'+days+'</select>' +
+      '<select class="date-part" id="'+id+'-m" aria-label="Mes">'+months+'</select>' +
+      '<select class="date-part date-part-year" id="'+id+'-y" aria-label="Año">'+years+'</select>' +
+    '</div>' +
+    '<input type="hidden" id="'+id+'" value="'+esc(value||'')+'">' +
+    '<div class="field-error">Este campo es obligatorio.</div></div>';
+}
+function wireDateField(id){
+  var dEl = document.getElementById(id+'-d'), mEl = document.getElementById(id+'-m'), yEl = document.getElementById(id+'-y'), hidden = document.getElementById(id);
+  if(!dEl || !mEl || !yEl || !hidden) return;
+  function sync(){
+    if(dEl.value && mEl.value && yEl.value){
+      var iso = yEl.value+'-'+mEl.value+'-'+dEl.value;
+      if(iso > todayISO()){ iso = todayISO(); var t=iso.split('-'); yEl.value=t[0]; mEl.value=t[1]; dEl.value=t[2]; }
+      hidden.value = iso;
+    } else {
+      hidden.value = '';
+    }
+    hidden.dispatchEvent(new Event('change'));
+    hidden.dispatchEvent(new Event('input'));
+  }
+  [dEl,mEl,yEl].forEach(function(sel){ sel.addEventListener('change', sync); });
+}
+function wireDateFields(ids){ ids.forEach(wireDateField); }
 function validateRequired(ids){
   var ok = true;
   ids.forEach(function(id){
@@ -2048,6 +2086,7 @@ function openNewPatientModal(){
     '</div>' +
     '<div class="modal-actions"><button class="btn btn-ghost" id="np-cancel">Cancelar</button><div class="right-actions"><button class="btn btn-primary" id="np-save">Crear paciente</button></div></div>',
     function(){
+      wireDateField('np-fnac');
       wireEdadDisplay('np-fnac','np-edad');
       wireObjetivoField('np');
       document.getElementById('np-cancel').addEventListener('click', closeModal);
@@ -2096,6 +2135,7 @@ function openEditPersonalModal(p){
     '</div>' +
     '<div class="modal-actions"><button class="btn btn-ghost" id="ep-cancel">Cancelar</button><div class="right-actions"><button class="btn btn-primary" id="ep-save">Guardar cambios</button></div></div>',
     function(){
+      wireDateField('ep-fnac');
       wireEdadDisplay('ep-fnac','ep-edad');
       wireObjetivoField('ep');
       document.getElementById('ep-cancel').addEventListener('click', closeModal);
@@ -2188,6 +2228,7 @@ function openAntecedenteModal(p, categoria, rec){
     fieldHtml('an-obs','Observaciones', rec?rec.observaciones:'','textarea') +
     '<div class="modal-actions">' + (isEdit ? '<button class="btn btn-danger" id="an-delete">Eliminar</button>' : '<span></span>') + '<div class="right-actions"><button class="btn btn-ghost" id="an-cancel">Cancelar</button><button class="btn btn-primary" id="an-save">Guardar</button></div></div>',
     function(box){
+      wireDateField('an-fecha');
       if(rec) box.querySelector('#an-status').value = rec.status;
       box.querySelector('#an-cancel').addEventListener('click', closeModal);
       if(isEdit) box.querySelector('#an-delete').addEventListener('click', function(){
@@ -2243,6 +2284,7 @@ function openDiarioModal(p){
     fieldHtml('di-contexto','Contexto / emociones','','textarea') +
     '<div class="modal-actions"><button class="btn btn-ghost" id="di-cancel">Cancelar</button><div class="right-actions"><button class="btn btn-primary" id="di-save">Guardar registro</button></div></div>',
     function(box){
+      wireDateField('di-fecha');
       box.querySelector('#di-cancel').addEventListener('click', closeModal);
       box.querySelector('#di-save').addEventListener('click', function(){
         if(!validateRequired(['di-fecha','di-hora','di-comida','di-alimentos'])) return;
@@ -2318,6 +2360,7 @@ function openAntroModal(p){
     fieldHtml('am-obs','Observaciones','','textarea') +
     '<div class="modal-actions"><button class="btn btn-ghost" id="am-cancel">Cancelar</button><div class="right-actions"><button class="btn btn-primary" id="am-save">Guardar medición</button></div></div>',
     function(box){
+      wireDateField('am-fecha');
       function updatePreview(){
         var peso = parseFloat(box.querySelector('#am-peso').value), talla = parseFloat(box.querySelector('#am-talla').value);
         var out = box.querySelector('#am-imc-preview');
@@ -2353,6 +2396,7 @@ function openVitalsModal(p){
     fieldHtml('vm-obs','Observaciones','','textarea') +
     '<div class="modal-actions"><button class="btn btn-ghost" id="vm-cancel">Cancelar</button><div class="right-actions"><button class="btn btn-primary" id="vm-save">Guardar</button></div></div>',
     function(box){
+      wireDateField('vm-fecha');
       box.querySelector('#vm-cancel').addEventListener('click', closeModal);
       box.querySelector('#vm-save').addEventListener('click', function(){
         if(!validateRequired(['vm-fecha'])) return;
@@ -2380,6 +2424,7 @@ function openLabModal(p, rec){
     fieldHtml('lb-obs','Observaciones', rec?rec.observaciones:'','textarea') +
     '<div class="modal-actions">' + (isEdit?'<button class="btn btn-danger" id="lb-delete">Eliminar</button>':'<span></span>') + '<div class="right-actions"><button class="btn btn-ghost" id="lb-cancel">Cancelar</button><button class="btn btn-primary" id="lb-save">Guardar</button></div></div>',
     function(box){
+      wireDateField('lb-fecha');
       box.querySelector('#lb-cancel').addEventListener('click', closeModal);
       if(isEdit) box.querySelector('#lb-delete').addEventListener('click', function(){
         if(!confirm('¿Eliminar esta prueba de laboratorio?')) return;
@@ -2416,6 +2461,7 @@ function openMedModal(p, kind, rec){
     fieldHtml('md-obs','Observaciones', rec?rec.observaciones:'','textarea') +
     '<div class="modal-actions">' + (isEdit?'<button class="btn btn-danger" id="md-delete">Eliminar</button>':'<span></span>') + '<div class="right-actions"><button class="btn btn-ghost" id="md-cancel">Cancelar</button><button class="btn btn-primary" id="md-save">Guardar</button></div></div>',
     function(box){
+      wireDateFields(['md-inicio','md-fin']);
       box.querySelector('#md-cancel').addEventListener('click', closeModal);
       if(isEdit) box.querySelector('#md-delete').addEventListener('click', function(){
         if(!confirm('¿Eliminar este registro?')) return;
@@ -2513,13 +2559,13 @@ function updateAiContext(){
 
 function buildOrganize(p){
   var draft = ConsultaService.getDraft(p);
-  if(!draft || !isDocumented(draft.notas)) return '<p>No hay notas libres de consulta documentadas todavía para organizar. Escriba en el campo "Notas libres de la consulta" y vuelva a intentarlo.</p>';
-  return '<p><b>Notas organizadas:</b></p><p>Motivo: '+esc(docPlain(draft.motivo))+'</p><p>Historia: '+esc(docPlain(draft.inicio))+' · Frecuencia: '+esc(docPlain(draft.frecuencia))+'</p><p>Texto original: "'+esc(draft.notas)+'"</p>';
+  if(!draft || !isDocumented(draft.historia)) return '<p>No hay notas de consulta documentadas todavía para organizar. Escriba en el campo "Historia del problema actual" y vuelva a intentarlo.</p>';
+  return '<p><b>Notas organizadas:</b></p><p>Motivo: '+esc(docPlain(draft.motivo))+'</p><p>Texto original: "'+esc(draft.historia)+'"</p>';
 }
 function buildSoap(p){
   var draft = ConsultaService.getDraft(p) || p.consultas[0];
   if(!draft) return '<p>Este paciente aún no tiene ninguna consulta registrada, por lo que no es posible generar un SOAP.</p>';
-  return '<p><b>S (Subjetivo):</b> '+esc(docPlain(draft.motivo))+'. '+esc(docPlain(draft.notas,''))+'</p>' +
+  return '<p><b>S (Subjetivo):</b> '+esc(docPlain(draft.motivo))+'. '+esc(docPlain(draft.historia,''))+'</p>' +
     '<p><b>O (Objetivo):</b> '+(getLatestVitals(p)?('FC '+docPlain(getLatestVitals(p).fc)+', TA '+docPlain(getLatestVitals(p).ta)):'Sin signos vitales documentados')+'</p>' +
     '<p><b>A (Análisis):</b> '+esc(docPlain(draft.evaluacion,'Pendiente de evaluación clínica'))+'</p>' +
     '<p><b>P (Plan):</b> '+esc(docPlain(draft.plan,'Pendiente de definir plan'))+'</p>';
