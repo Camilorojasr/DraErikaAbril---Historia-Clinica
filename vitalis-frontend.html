@@ -1,0 +1,2702 @@
+<title>Vitalis Clínica</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+:root{
+  --bg:#f5f6f2; --surface:#ffffff; --surface-2:#eef0ea; --border:#dde1d8;
+  --text:#20261f; --text-muted:#5c6659; --text-faint:#8b9587;
+  --accent:#3f6c53; --accent-strong:#2c4d3c; --accent-soft:#e4ede5; --accent-soft-2:#d3e2d7;
+  --good:#3f6c53; --warn:#a9762e; --warn-soft:#f4e9d7; --bad:#a4443b; --bad-soft:#f5e3e0; --info-soft:#e6ecf2;
+  --shadow: 0 1px 2px rgba(32,38,31,0.06), 0 8px 24px -12px rgba(32,38,31,0.12);
+  --radius: 10px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#14180f; --surface:#1b2116; --surface-2:#212a1a; --border:#31402a;
+    --text:#e7ebe1; --text-muted:#a3af9a; --text-faint:#77836d;
+    --accent:#82b995; --accent-strong:#a6d3b3; --accent-soft:#22301f; --accent-soft-2:#293a24;
+    --good:#82b995; --warn:#dcb26e; --warn-soft:#332a17; --bad:#e08b81; --bad-soft:#3a201d; --info-soft:#1f2a30;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#14180f; --surface:#1b2116; --surface-2:#212a1a; --border:#31402a;
+  --text:#e7ebe1; --text-muted:#a3af9a; --text-faint:#77836d;
+  --accent:#82b995; --accent-strong:#a6d3b3; --accent-soft:#22301f; --accent-soft-2:#293a24;
+  --good:#82b995; --warn:#dcb26e; --warn-soft:#332a17; --bad:#e08b81; --bad-soft:#3a201d; --info-soft:#1f2a30;
+  --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+}
+/* ===== Paletas de marca (solo cambian el acento; puramente estético) ===== */
+:root[data-brand="cafe"]{ --accent:#8a5a34; --accent-strong:#6b4225; --accent-soft:#f1e6d9; --accent-soft-2:#e4cfb7; --good:#8a5a34; }
+:root[data-brand="azul"]{ --accent:#3b6ea5; --accent-strong:#28517a; --accent-soft:#e1ecf6; --accent-soft-2:#c7dcef; --good:#3b6ea5; }
+:root[data-brand="morado"]{ --accent:#7c5aa6; --accent-strong:#5b3f80; --accent-soft:#eee6f6; --accent-soft-2:#dcc7ec; --good:#7c5aa6; }
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"])[data-brand="cafe"]{ --accent:#d3a878; --accent-strong:#e6c39c; --accent-soft:#3a2c1c; --accent-soft-2:#4a3824; --good:#d3a878; }
+  :root:not([data-theme="light"])[data-brand="azul"]{ --accent:#8fb7e0; --accent-strong:#b3d0ee; --accent-soft:#1c2c3a; --accent-soft-2:#243a4c; --good:#8fb7e0; }
+  :root:not([data-theme="light"])[data-brand="morado"]{ --accent:#c3a6e0; --accent-strong:#d9c2ee; --accent-soft:#2c1f3a; --accent-soft-2:#3a2a4c; --good:#c3a6e0; }
+}
+:root[data-theme="dark"][data-brand="cafe"]{ --accent:#d3a878; --accent-strong:#e6c39c; --accent-soft:#3a2c1c; --accent-soft-2:#4a3824; --good:#d3a878; }
+:root[data-theme="dark"][data-brand="azul"]{ --accent:#8fb7e0; --accent-strong:#b3d0ee; --accent-soft:#1c2c3a; --accent-soft-2:#243a4c; --good:#8fb7e0; }
+:root[data-theme="dark"][data-brand="morado"]{ --accent:#c3a6e0; --accent-strong:#d9c2ee; --accent-soft:#2c1f3a; --accent-soft-2:#3a2a4c; --good:#c3a6e0; }
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{ background:var(--bg); color:var(--text); font-family:"Work Sans", -apple-system, BlinkMacSystemFont, sans-serif; font-size:14.5px; line-height:1.5; -webkit-font-smoothing:antialiased; }
+h1,h2,h3,h4{ font-family:"Fraunces", Georgia, serif; font-weight:600; text-wrap:balance; margin:0; color:var(--text); }
+.mono, .num{ font-family:"IBM Plex Mono", ui-monospace, monospace; font-variant-numeric:tabular-nums; }
+a{ color:inherit; } button{ font-family:inherit; } ::selection{ background:var(--accent-soft-2); }
+:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+.eyebrow{ text-transform:uppercase; letter-spacing:0.09em; font-size:11px; font-weight:600; color:var(--text-faint); }
+
+.shell{ display:flex; min-height:100vh; }
+.sidebar{ width:216px; flex-shrink:0; border-right:1px solid var(--border); padding:20px 14px; display:flex; flex-direction:column; gap:22px; position:sticky; top:0; height:100vh; overflow-y:auto; }
+.brand{ display:flex; align-items:center; gap:9px; padding:0 6px; }
+.brand-mark{ width:26px;height:26px;border-radius:7px; background:linear-gradient(150deg, var(--accent), var(--accent-strong)); display:flex;align-items:center;justify-content:center; color:#fff; font-family:"Fraunces",serif; font-weight:600; font-size:14px; flex-shrink:0; }
+.brand-name{ font-family:"Fraunces",serif; font-weight:600; font-size:16.5px; }
+.brand-sub{ font-size:10.5px; color:var(--text-faint); margin-top:-2px; }
+.nav-group{ display:flex; flex-direction:column; gap:2px; }
+.nav-label{ padding:0 10px 4px; }
+.nav-item{ display:flex; align-items:center; gap:9px; padding:8px 10px; border-radius:8px; color:var(--text-muted); font-size:13.5px; font-weight:500; cursor:pointer; border:1px solid transparent; background:none; width:100%; text-align:left; }
+.nav-item svg{ width:16px; height:16px; flex-shrink:0; opacity:0.8; }
+.nav-item:hover{ background:var(--surface-2); color:var(--text); }
+.nav-item.active{ background:var(--accent-soft); color:var(--accent-strong); border-color:var(--accent-soft-2); }
+.sidebar-foot{ margin-top:auto; padding-top:14px; border-top:1px solid var(--border); display:flex; flex-direction:column; gap:8px; }
+.clinician{ display:flex; align-items:center; gap:9px; padding:6px; }
+.clinician-avatar{ width:28px;height:28px;border-radius:50%; background:var(--surface-2); display:flex; align-items:center; justify-content:center; font-size:11.5px; font-weight:600; color:var(--text-muted); flex-shrink:0; }
+.clinician-name{ font-size:12.5px; font-weight:600; }
+.clinician-role{ font-size:11px; color:var(--text-faint); }
+.reset-link{ font-size:11px; color:var(--text-faint); background:none; border:none; text-align:left; cursor:pointer; padding:0 6px; text-decoration:underline; }
+.reset-link:hover{ color:var(--text-muted); }
+.storage-note{ font-size:10px; color:var(--text-faint); padding:0 6px; line-height:1.4; }
+.brand-theme-row{ display:flex; gap:7px; padding:0 6px; align-items:center; }
+.brand-swatch{ width:17px; height:17px; border-radius:50%; border:2px solid transparent; padding:0; cursor:pointer; box-shadow:inset 0 0 0 1px rgba(0,0,0,0.08); }
+.brand-swatch.on{ border-color:var(--text); }
+.brand-swatch:focus-visible{ outline:2px solid var(--text-muted); outline-offset:2px; }
+.swatch-verde{ background:#3f6c53; } .swatch-cafe{ background:#8a5a34; } .swatch-azul{ background:#3b6ea5; } .swatch-morado{ background:#7c5aa6; }
+
+.main{ flex:1; min-width:0; } .view{ display:none; } .view.active{ display:block; }
+.page-head{ padding:26px 34px 18px; display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+.page-head h1{ font-size:24px; } .page-head .sub{ color:var(--text-muted); font-size:13px; margin-top:4px; }
+.head-actions{ display:flex; gap:8px; flex-wrap:wrap; }
+.btn{ display:inline-flex; align-items:center; gap:6px; padding:8px 13px; border-radius:8px; font-size:13px; font-weight:600; border:1px solid var(--border); background:var(--surface); color:var(--text); cursor:pointer; transition:background .12s, border-color .12s; }
+.btn:hover{ background:var(--surface-2); }
+.btn-primary{ background:var(--accent); border-color:var(--accent); color:#fff; }
+.btn-primary:hover{ background:var(--accent-strong); border-color:var(--accent-strong); }
+.btn-ghost{ border-color:transparent; background:none; } .btn-ghost:hover{ background:var(--surface-2); }
+.btn-danger{ color:var(--bad); border-color:var(--bad-soft); }
+.btn-danger:hover{ background:var(--bad-soft); }
+.btn-sm{ padding:5px 10px; font-size:12px; border-radius:7px; }
+.btn:disabled{ opacity:.5; cursor:not-allowed; }
+.linklike{ background:none; border:none; padding:0; margin:0; color:inherit; font:inherit; text-align:left; cursor:pointer; }
+.linklike.primary{ font-weight:600; color:var(--text); }
+.linklike.primary:hover{ color:var(--accent-strong); text-decoration:underline; }
+.icon-btn{ display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:7px; border:1px solid var(--border); background:var(--surface); color:var(--text-muted); cursor:pointer; flex-shrink:0; }
+.icon-btn:hover{ background:var(--surface-2); color:var(--text); }
+.icon-btn.danger:hover{ background:var(--bad-soft); color:var(--bad); border-color:var(--bad-soft); }
+.icon-btn svg{ width:13px; height:13px; }
+
+.search-row{ padding:0 34px 6px; position:relative; }
+.search-box{ display:flex; align-items:center; gap:8px; border:1px solid var(--border); background:var(--surface); border-radius:9px; padding:9px 13px; max-width:420px; }
+.search-box svg{ width:15px;height:15px; color:var(--text-faint); flex-shrink:0; }
+.search-box input{ border:none; outline:none; background:none; color:var(--text); font-size:13.5px; width:100%; font-family:inherit; }
+.search-results{ max-width:420px; margin-top:6px; display:flex; flex-direction:column; gap:2px; }
+.search-hit{ padding:7px 10px; border-radius:7px; font-size:13px; cursor:pointer; display:flex; justify-content:space-between; background:none; border:none; width:100%; text-align:left; color:var(--text); }
+.search-hit:hover, .search-hit:focus-visible{ background:var(--surface-2); }
+.search-hit .hit-meta{ color:var(--text-faint); font-size:11.5px; }
+.search-empty{ padding:7px 10px; color:var(--text-faint); font-size:13px; }
+
+.dash-grid{ padding:14px 34px 0; display:grid; grid-template-columns:repeat(4, 1fr); gap:14px; }
+.stat-card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:15px 16px; display:flex; flex-direction:column; gap:4px; }
+.stat-card .n{ font-family:"Fraunces",serif; font-size:26px; font-weight:600; }
+.stat-card .l{ font-size:12px; color:var(--text-muted); }
+.stat-card .trend{ font-size:11px; margin-top:2px; } .trend.up{ color:var(--good); } .trend.down{ color:var(--bad); }
+.panel{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px; display:flex; flex-direction:column; gap:10px; }
+.panel-head{ display:flex; align-items:center; justify-content:space-between; }
+.panel-head h3{ font-size:14.5px; }
+.panel-head .count-pill{ font-size:11px; font-weight:600; background:var(--surface-2); color:var(--text-muted); padding:2px 8px; border-radius:99px; }
+.row-list{ display:flex; flex-direction:column; }
+.row-item{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:9px 0; border-top:1px solid var(--border); font-size:13px; }
+.row-item:first-child{ border-top:none; }
+.row-item .primary{ font-weight:600; } .row-item .secondary{ color:var(--text-muted); font-size:12px; }
+.row-item .right{ text-align:right; flex-shrink:0; }
+.row-empty{ color:var(--text-faint); font-size:12.5px; padding:6px 0; }
+.pill{ display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:600; padding:2.5px 8px; border-radius:99px; white-space:nowrap; }
+.pill-warn{ background:var(--warn-soft); color:var(--warn); } .pill-bad{ background:var(--bad-soft); color:var(--bad); }
+.pill-good{ background:var(--accent-soft); color:var(--accent-strong); } .pill-neutral{ background:var(--surface-2); color:var(--text-muted); }
+.pill-info{ background:var(--info-soft); color:var(--text-muted); }
+.pill-btn{ border:none; cursor:pointer; }
+.checkbox-row{ display:flex; align-items:center; gap:8px; }
+.masonry-2{ display:grid; grid-template-columns:1fr 1fr; gap:14px; padding:14px 34px 40px; }
+
+.patient-header{ position:sticky; top:0; z-index:5; background:var(--bg); border-bottom:1px solid var(--border); padding:16px 34px 0; }
+.ph-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap; padding-bottom:12px; }
+.ph-id{ display:flex; gap:13px; align-items:center; }
+.ph-avatar{ width:46px;height:46px;border-radius:50%; background:var(--accent-soft); color:var(--accent-strong); display:flex; align-items:center; justify-content:center; font-family:"Fraunces",serif; font-weight:600; font-size:17px; flex-shrink:0; }
+.ph-name-row{ display:flex; align-items:center; gap:8px; }
+.ph-name{ font-size:19px; } .ph-meta{ color:var(--text-muted); font-size:12.5px; margin-top:2px; }
+.ph-facts{ display:flex; flex-wrap:wrap; gap:6px; padding-bottom:12px; }
+.fact{ display:flex; align-items:baseline; gap:5px; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:5px 10px; font-size:12px; }
+.fact .k{ color:var(--text-faint); font-size:10.5px; text-transform:uppercase; letter-spacing:0.04em; } .fact .v{ font-weight:600; }
+.fact.alert{ border-color:var(--bad); background:var(--bad-soft); } .fact.alert .k, .fact.alert .v{ color:var(--bad); }
+.tabs{ display:flex; gap:2px; overflow-x:auto; }
+.tab{ padding:9px 13px; font-size:13px; font-weight:600; color:var(--text-muted); border-bottom:2px solid transparent; cursor:pointer; white-space:nowrap; background:none; border-top:none; border-left:none; border-right:none; }
+.tab:hover{ color:var(--text); } .tab.active{ color:var(--accent-strong); border-bottom-color:var(--accent); }
+.patient-body{ padding:22px 34px 60px; } .ptab{ display:none; } .ptab.active{ display:block; }
+
+.func-profile{ display:grid; grid-template-columns:repeat(5,1fr); gap:12px; margin-bottom:22px; }
+.func-card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:13px 14px; display:flex; flex-direction:column; gap:8px; }
+.func-card .fc-label{ font-size:11.5px; color:var(--text-muted); font-weight:600; }
+.func-card .fc-value{ font-size:13.5px; font-weight:600; }
+.gauge{ display:flex; gap:3px; } .gauge i{ height:6px; flex:1; border-radius:3px; background:var(--surface-2); }
+.section-title{ display:flex; align-items:center; justify-content:space-between; margin:26px 0 12px; gap:10px; }
+.section-title h3{ font-size:16px; } .section-title:first-child{ margin-top:0; }
+.card-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px; }
+.card-head{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:9px; }
+.card-head h4{ font-size:13.5px; margin:0; }
+.card h4{ font-size:13.5px; margin-bottom:9px; }
+.kv{ display:flex; justify-content:space-between; gap:10px; padding:6px 0; border-top:1px solid var(--border); font-size:13px; }
+.kv:first-of-type{ border-top:none; } .kv .k{ color:var(--text-muted); } .kv .v{ font-weight:600; text-align:right; }
+.chip-row{ display:flex; flex-wrap:wrap; gap:6px; } .chip{ background:var(--surface-2); border-radius:99px; padding:4px 10px; font-size:12px; color:var(--text-muted); display:inline-flex; align-items:center; gap:6px; }
+.chip button{ border:none; background:none; color:var(--text-faint); cursor:pointer; font-size:13px; line-height:1; padding:0; }
+.chip button:hover{ color:var(--bad); }
+.empty-note{ color:var(--text-faint); font-size:12.5px; font-style:italic; }
+.cta-empty{ display:flex; align-items:center; justify-content:space-between; gap:10px; background:var(--surface-2); border:1px dashed var(--border); border-radius:9px; padding:10px 12px; font-size:12.5px; color:var(--text-muted); }
+table{ width:100%; border-collapse:collapse; font-size:13px; }
+th{ text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-faint); font-weight:600; padding:0 10px 8px; }
+td{ padding:9px 10px; border-top:1px solid var(--border); vertical-align:middle; } tr:hover td{ background:var(--surface-2); }
+.table-wrap{ overflow-x:auto; }
+.row-actions{ display:flex; gap:6px; justify-content:flex-end; }
+.free-text{ font-size:13.5px; line-height:1.65; color:var(--text); } .free-text p{ margin:0 0 10px; } .free-text p:last-child{ margin-bottom:0; }
+.spark{ display:block; } .spark-empty{ color:var(--text-faint); font-size:12px; padding:20px 0; text-align:center; }
+.timeline{ position:relative; padding-left:26px; }
+.timeline::before{ content:""; position:absolute; left:6px; top:4px; bottom:4px; width:1.5px; background:var(--border); }
+.tl-item{ position:relative; padding-bottom:22px; } .tl-item:last-child{ padding-bottom:0; }
+.tl-dot{ position:absolute; left:-26px; top:3px; width:11px; height:11px; border-radius:50%; background:var(--surface); border:2.5px solid var(--accent); }
+.tl-date{ font-size:11px; color:var(--text-faint); font-weight:600; text-transform:uppercase; letter-spacing:0.03em; }
+.tl-title{ font-weight:600; font-size:13.5px; margin-top:1px; } .tl-desc{ color:var(--text-muted); font-size:12.5px; margin-top:2px; }
+.tl-filters{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:18px; }
+.tl-filter{ font-size:12px; font-weight:600; padding:5px 11px; border-radius:99px; border:1px solid var(--border); background:var(--surface); color:var(--text-muted); cursor:pointer; }
+.tl-filter.on{ background:var(--accent-soft); border-color:var(--accent-soft-2); color:var(--accent-strong); }
+.subnav{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:16px; }
+.subnav button{ font-size:12.5px; font-weight:600; padding:6px 12px; border-radius:8px; border:1px solid var(--border); background:var(--surface); color:var(--text-muted); cursor:pointer; }
+.subnav button.on{ background:var(--accent-soft); color:var(--accent-strong); border-color:var(--accent-soft-2); }
+.field{ display:flex; flex-direction:column; gap:5px; }
+.field label{ font-size:11.5px; font-weight:600; color:var(--text-muted); }
+.field .req{ color:var(--bad); }
+.field textarea, .field input, .field select{ border:1px solid var(--border); border-radius:8px; padding:9px 11px; font-size:13.5px; background:var(--surface); color:var(--text); font-family:inherit; resize:vertical; }
+.field textarea:focus, .field input:focus, .field select:focus{ outline:2px solid var(--accent); outline-offset:1px; }
+.field.invalid textarea, .field.invalid input, .field.invalid select{ border-color:var(--bad); }
+.field-error{ color:var(--bad); font-size:11.5px; display:none; }
+.field-hint{ color:var(--text-faint); font-size:11px; }
+.field.invalid .field-error{ display:block; }
+.form-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.tag-editor{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; border:1px solid var(--border); border-radius:8px; padding:7px; }
+.tag-editor input{ border:none; outline:none; font-size:12.5px; font-family:inherit; flex:1; min-width:120px; padding:3px; background:none; color:var(--text); }
+.consult-block{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px; margin-bottom:14px; }
+.consult-block h4{ font-size:13px; margin-bottom:11px; display:flex; align-items:center; gap:7px; }
+.consult-block .letter{ width:19px;height:19px; border-radius:5px; background:var(--accent-soft); color:var(--accent-strong); font-size:11px; display:flex; align-items:center; justify-content:center; font-weight:700; }
+.symptom-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.symptom-cat{ border:1px solid var(--border); border-radius:9px; padding:11px 13px; background:var(--surface); }
+.symptom-cat h5{ font-size:12.5px; margin:0 0 8px; font-weight:700; }
+.symptom-list{ display:flex; flex-direction:column; gap:5px; }
+.symptom-line{ display:flex; align-items:center; justify-content:space-between; font-size:12px; background:none; border:none; width:100%; padding:3px 4px; border-radius:5px; cursor:pointer; color:var(--text); text-align:left; }
+.symptom-line:hover{ background:var(--surface-2); }
+.dot{ width:7px;height:7px;border-radius:50%; display:inline-block; margin-right:5px; flex-shrink:0; }
+.dot.presente{ background:var(--warn); } .dot.ausente{ background:var(--good); } .dot.no_evaluado{ background:var(--border); }
+.habit-week-grid{ display:grid; grid-template-columns:repeat(6,1fr); gap:6px; }
+.hw-col{ display:flex; flex-direction:column; align-items:center; gap:5px; }
+.hw-bar-track{ width:100%; height:70px; background:var(--surface-2); border-radius:6px; display:flex; align-items:flex-end; overflow:hidden; }
+.hw-bar{ width:100%; border-radius:6px 6px 0 0; } .hw-label{ font-size:10.5px; color:var(--text-faint); } .hw-val{ font-size:11px; font-weight:600; }
+.mini-table{ font-size:12px; }
+.mini-table th, .mini-table td{ padding:6px 8px; }
+.consulta-hist-item{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:9px 0; border-top:1px solid var(--border); font-size:13px; cursor:pointer; background:none; border-left:none; border-right:none; border-bottom:none; width:100%; text-align:left; color:var(--text); }
+.consulta-hist-item:first-child{ border-top:none; }
+.consulta-hist-item:hover{ background:var(--surface-2); }
+
+.ai-fab{ position:fixed; right:26px; bottom:26px; z-index:50; display:flex; align-items:center; gap:8px; background:var(--accent-strong); color:#fff; border:none; border-radius:99px; padding:12px 18px; font-weight:600; font-size:13.5px; cursor:pointer; box-shadow:var(--shadow); }
+.ai-fab svg{ width:16px;height:16px; } .ai-fab:hover{ background:var(--accent); }
+.ai-panel{ position:fixed; top:0; right:-420px; width:400px; height:100vh; z-index:60; background:var(--surface); border-left:1px solid var(--border); box-shadow:-14px 0 32px -18px rgba(0,0,0,0.28); transition:right .22s ease; display:flex; flex-direction:column; }
+.ai-panel.open{ right:0; }
+.ai-head{ padding:16px 18px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+.ai-head h3{ font-size:15px; display:flex; align-items:center; gap:8px; } .ai-head .dot-live{ width:7px;height:7px;border-radius:50%; background:var(--accent); }
+.ai-context{ padding:10px 18px; font-size:11.5px; color:var(--text-muted); background:var(--surface-2); border-bottom:1px solid var(--border); }
+.ai-body{ flex:1; overflow-y:auto; padding:16px 18px; display:flex; flex-direction:column; gap:10px; }
+.ai-actions{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.ai-action{ border:1px solid var(--border); background:var(--surface); border-radius:9px; padding:10px 11px; font-size:12px; font-weight:600; text-align:left; cursor:pointer; color:var(--text); }
+.ai-action:hover{ border-color:var(--accent-soft-2); background:var(--accent-soft); }
+.ai-ask-row{ display:flex; gap:6px; }
+.ai-ask-row input{ flex:1; border:1px solid var(--border); border-radius:8px; padding:9px 11px; font-size:13px; background:var(--surface); color:var(--text); font-family:inherit; }
+.ai-msg{ background:var(--surface-2); border-radius:10px; padding:12px 13px; font-size:13px; line-height:1.55; }
+.ai-msg .q{ font-weight:700; margin-bottom:6px; }
+.ai-msg .a p{ margin:0 0 8px; } .ai-msg .a p:last-child{ margin:0; }
+.ai-typing{ display:flex; gap:4px; padding:10px 0; }
+.ai-typing i{ width:6px;height:6px;border-radius:50%; background:var(--text-faint); animation:blink 1.1s infinite ease-in-out; }
+.ai-typing i:nth-child(2){ animation-delay:.15s; } .ai-typing i:nth-child(3){ animation-delay:.3s; }
+@keyframes blink{ 0%,80%,100%{ opacity:.25; } 40%{ opacity:1; } }
+.ai-foot{ padding:11px 18px; border-top:1px solid var(--border); font-size:10.5px; color:var(--text-faint); line-height:1.4; }
+.ai-scrim{ position:fixed; inset:0; background:rgba(20,24,15,0.28); z-index:55; opacity:0; pointer-events:none; transition:opacity .2s; } .ai-scrim.show{ opacity:1; pointer-events:auto; }
+
+.modal-scrim{ position:fixed; inset:0; background:rgba(20,24,15,.32); display:flex; align-items:center; justify-content:center; z-index:80; opacity:0; pointer-events:none; transition:opacity .15s; padding:20px; overflow-y:auto; }
+.modal-scrim.show{ opacity:1; pointer-events:auto; }
+.modal{ background:var(--surface); border:1px solid var(--border); border-radius:14px; box-shadow:var(--shadow); width:520px; max-width:100%; max-height:88vh; overflow-y:auto; padding:22px 24px; margin:auto; }
+.modal h3{ font-size:17px; margin-bottom:4px; } .modal .modal-sub{ color:var(--text-muted); font-size:12.5px; margin-bottom:16px; }
+.modal-actions{ display:flex; justify-content:space-between; gap:8px; margin-top:18px; }
+.modal-actions .right-actions{ display:flex; gap:8px; margin-left:auto; }
+.patient-picker-list{ display:flex; flex-direction:column; gap:2px; max-height:260px; overflow-y:auto; margin-top:10px; }
+.patient-picker-item{ display:flex; justify-content:space-between; align-items:center; padding:9px 10px; border-radius:8px; cursor:pointer; font-size:13px; border:1px solid transparent; background:none; width:100%; text-align:left; }
+.patient-picker-item:hover, .patient-picker-item:focus-visible{ background:var(--surface-2); border-color:var(--border); }
+.patient-picker-item .hit-meta{ color:var(--text-faint); font-size:11.5px; }
+
+.save-error-banner{ position:fixed; top:0; left:0; right:0; z-index:200; background:var(--bad); color:#fff; padding:10px 16px; font-size:13px; font-weight:600; display:flex; align-items:center; justify-content:center; gap:14px; transform:translateY(-100%); transition:transform .18s; box-shadow:var(--shadow); }
+.save-error-banner.show{ transform:translateY(0); }
+.save-error-banner button{ background:#fff; color:var(--bad); border:none; border-radius:7px; padding:5px 12px; font-size:12px; font-weight:700; cursor:pointer; flex-shrink:0; }
+.save-error-banner button:hover{ opacity:.9; }
+#toast-container{ position:fixed; left:24px; bottom:24px; z-index:90; display:flex; flex-direction:column; gap:8px; }
+.toast{ background:var(--accent-strong); color:#fff; padding:10px 15px; border-radius:9px; font-size:13px; font-weight:600; box-shadow:var(--shadow); opacity:0; transform:translateY(6px); transition:opacity .18s, transform .18s; max-width:320px; }
+.toast.show{ opacity:1; transform:translateY(0); } .toast.error{ background:var(--bad); }
+
+@media (prefers-reduced-motion: reduce){ .ai-panel, .ai-scrim, .ai-typing i, .toast, .modal-scrim{ transition:none; animation:none; } }
+@media (max-width: 980px){
+  .dash-grid{ grid-template-columns:repeat(2,1fr); }
+  .masonry-2, .card-grid{ grid-template-columns:1fr; }
+  .func-profile{ grid-template-columns:repeat(2,1fr); }
+  .symptom-grid{ grid-template-columns:1fr; }
+  .sidebar{ display:none; }
+  .ai-panel{ width:100%; right:-100%; }
+}
+</style>
+
+<div class="shell">
+  <nav class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">V</div>
+      <div><div class="brand-name">Vitalis</div><div class="brand-sub">Medicina funcional</div></div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-label eyebrow">Clínica</div>
+      <button class="nav-item active" data-nav="dashboard" id="nav-dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        Panel
+      </button>
+      <button class="nav-item" data-nav="patient" id="nav-patient">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.4"/><path d="M4.5 20c1.4-4 4.2-6 7.5-6s6.1 2 7.5 6"/></svg>
+        Ficha de paciente
+      </button>
+    </div>
+    <div class="nav-group">
+      <div class="nav-label eyebrow">Pacientes recientes</div>
+      <div id="sidebar-recent"></div>
+    </div>
+    <div class="sidebar-foot">
+      <div class="clinician">
+        <div class="clinician-avatar">EA</div>
+        <div><div class="clinician-name">Dra. Erika Abril</div><div class="clinician-role">Medicina funcional</div></div>
+      </div>
+      <div class="brand-theme-row" id="brand-theme-row" role="group" aria-label="Color de la aplicación">
+        <button class="brand-swatch swatch-verde" data-brand="verde" title="Verde (por defecto)" aria-label="Tema verde"></button>
+        <button class="brand-swatch swatch-cafe" data-brand="cafe" title="Café" aria-label="Tema café"></button>
+        <button class="brand-swatch swatch-azul" data-brand="azul" title="Azul" aria-label="Tema azul"></button>
+        <button class="brand-swatch swatch-morado" data-brand="morado" title="Morado" aria-label="Tema morado"></button>
+      </div>
+      <button class="reset-link" id="btn-reset-demo">Restablecer datos de ejemplo</button>
+      <div class="storage-note" id="storage-note">Guardado en el servidor (base de datos).</div>
+    </div>
+  </nav>
+
+  <div class="main">
+    <section class="view active" id="view-dashboard">
+      <div class="page-head">
+        <div>
+          <h1 id="dash-greeting">Buenos días, Dra. Abril</h1>
+          <div class="sub" id="dash-sub">—</div>
+        </div>
+        <div class="head-actions">
+          <button class="btn" id="btn-new-patient">＋ Nuevo paciente</button>
+          <button class="btn btn-primary" id="btn-new-consult">＋ Nueva consulta</button>
+        </div>
+      </div>
+
+      <div class="search-row">
+        <div class="search-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          <input type="text" id="patient-search" placeholder="Buscar paciente por nombre…" autocomplete="off">
+        </div>
+        <div class="search-results" id="search-results"></div>
+      </div>
+
+      <div class="dash-grid" id="dash-stats"></div>
+      <div class="masonry-2" id="dash-panels"></div>
+    </section>
+
+    <section class="view" id="view-patient">
+      <div class="patient-header">
+        <div class="ph-top">
+          <div class="ph-id">
+            <div class="ph-avatar" id="ph-avatar">CR</div>
+            <div>
+              <div class="ph-name-row"><div class="ph-name" id="ph-name">—</div>
+                <button class="icon-btn" id="btn-edit-personal" title="Editar datos personales" aria-label="Editar datos personales">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                </button>
+              </div>
+              <div class="ph-meta" id="ph-meta">—</div>
+            </div>
+          </div>
+          <div class="head-actions">
+            <button class="btn btn-sm" id="btn-history">Historial de cambios</button>
+            <button class="btn btn-primary btn-sm" id="btn-new-consult-patient">＋ Nueva consulta</button>
+          </div>
+        </div>
+        <div class="ph-facts" id="ph-facts"></div>
+        <div class="tabs" id="patient-tabs">
+          <button class="tab active" data-tab="resumen">Resumen</button>
+          <button class="tab" data-tab="consulta">Consulta actual</button>
+          <button class="tab" data-tab="historia">Historia clínica</button>
+          <button class="tab" data-tab="nutricion">Nutrición</button>
+          <button class="tab" data-tab="habitos">Hábitos</button>
+          <button class="tab" data-tab="antropometria">Antropometría y signos vitales</button>
+          <button class="tab" data-tab="laboratorios">Laboratorios</button>
+          <button class="tab" data-tab="medicacion">Medicación y suplementos</button>
+          <button class="tab" data-tab="linea">Línea temporal</button>
+        </div>
+      </div>
+
+      <div class="patient-body">
+        <div class="func-profile" id="func-profile"></div>
+
+        <div class="ptab active" data-ptab="resumen" id="ptab-resumen"></div>
+
+        <div class="ptab" data-ptab="consulta">
+          <div class="section-title"><h3 id="consulta-heading">Consulta actual</h3><span class="pill pill-neutral" id="consulta-estado-pill">Borrador</span></div>
+          <div class="consult-block">
+            <h4><span class="letter">A</span> Motivo de consulta</h4>
+            <div class="form-grid">
+              <div class="field" id="field-c-motivo"><label>Motivo principal <span class="req">*</span></label><textarea rows="2" id="c-motivo"></textarea><div class="field-error">Este campo es obligatorio para finalizar la consulta.</div></div>
+              <div class="field"><label>Expectativas del paciente</label><textarea rows="2" id="c-expectativas"></textarea></div>
+              <div class="field"><label>Objetivos</label><input type="text" id="c-objetivos"></div>
+              <div class="field"><label>Prioridades de hoy</label><input type="text" id="c-prioridades"></div>
+            </div>
+          </div>
+          <div class="consult-block">
+            <h4><span class="letter">B</span> Historia del problema actual</h4>
+            <div class="form-grid">
+              <div class="field"><label>Inicio</label><input type="text" id="c-inicio"></div>
+              <div class="field"><label>Frecuencia</label><input type="text" id="c-frecuencia"></div>
+              <div class="field"><label>Factores desencadenantes</label><input type="text" id="c-desencadenantes"></div>
+              <div class="field"><label>Factores que alivian</label><input type="text" id="c-alivian"></div>
+              <div class="field" style="grid-column:1/-1;"><label>Notas libres de la consulta</label><textarea rows="4" id="c-notas" placeholder="Escriba aquí en lenguaje natural — el asistente de IA puede organizarlas."></textarea></div>
+            </div>
+          </div>
+          <div class="consult-block">
+            <h4><span class="letter">C</span> Revisión por sistemas y examen</h4>
+            <p class="free-text" style="color:var(--text-muted);">Ver pestaña <b>Historia clínica</b> para la revisión por sistemas completa. Signos vitales más recientes: <span id="c-vitals-today">—</span>.</p>
+          </div>
+          <div style="display:flex; gap:8px; justify-content:flex-end;">
+            <button class="btn btn-ghost" id="btn-cancel-consult">Cancelar</button>
+            <button class="btn" id="btn-save-draft">Guardar borrador</button>
+            <button class="btn btn-primary" id="btn-finish-consult">Finalizar consulta</button>
+          </div>
+          <div class="section-title"><h3>Consultas anteriores</h3></div>
+          <div class="card" id="consultas-historial"></div>
+        </div>
+
+        <div class="ptab" data-ptab="historia" id="ptab-historia">
+          <div class="section-title"><h3>Revisión por sistemas</h3><span class="field-hint">Clic sobre un síntoma para cambiar su estado</span></div>
+          <div class="symptom-grid" id="symptom-grid"></div>
+          <div class="section-title"><h3>Antecedentes</h3><button class="btn btn-sm" id="btn-add-antecedente">＋ Añadir antecedente</button></div>
+          <div class="card-grid" id="antecedentes-grid"></div>
+        </div>
+
+        <div class="ptab" data-ptab="nutricion">
+          <div class="subnav" id="nutri-subnav">
+            <button class="on" data-nsub="patron">Patrón alimentario</button>
+            <button data-nsub="calidad">Calidad y composición</button>
+            <button data-nsub="diario">Diario alimentario</button>
+            <button data-nsub="conducta">Conducta alimentaria</button>
+          </div>
+          <div class="nsub" data-nsub-panel="patron" id="nsub-patron"></div>
+          <div class="nsub" data-nsub-panel="calidad" id="nsub-calidad" style="display:none;"></div>
+          <div class="nsub" data-nsub-panel="diario" style="display:none;">
+            <div class="section-title" style="margin-top:0;"><h3 style="font-size:14px;">Registros del diario</h3><button class="btn btn-sm" id="btn-add-diario">＋ Añadir registro</button></div>
+            <div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Hora</th><th>Comida</th><th>Alimentos</th><th>Hambre → Saciedad</th><th>Contexto / emociones</th><th></th></tr></thead><tbody id="food-diary-body"></tbody></table></div>
+          </div>
+          <div class="nsub" data-nsub-panel="conducta" id="nsub-conducta" style="display:none;"></div>
+        </div>
+
+        <div class="ptab" data-ptab="habitos">
+          <div class="subnav" id="habit-subnav">
+            <button class="on" data-hsub="actividad">Actividad física</button>
+            <button data-hsub="sueno">Sueño</button>
+            <button data-hsub="estres">Estrés</button>
+            <button data-hsub="hidratacion">Hidratación</button>
+            <button data-hsub="sustancias">Sustancias</button>
+            <button data-hsub="seguimiento">Seguimiento de objetivos</button>
+          </div>
+          <div class="hsub" data-hsub-panel="actividad" id="hsub-actividad"></div>
+          <div class="hsub" data-hsub-panel="sueno" id="hsub-sueno" style="display:none;"></div>
+          <div class="hsub" data-hsub-panel="estres" id="hsub-estres" style="display:none;"></div>
+          <div class="hsub" data-hsub-panel="hidratacion" id="hsub-hidratacion" style="display:none;"></div>
+          <div class="hsub" data-hsub-panel="sustancias" id="hsub-sustancias" style="display:none;"></div>
+          <div class="hsub" data-hsub-panel="seguimiento" id="hsub-seguimiento" style="display:none;"></div>
+        </div>
+
+        <div class="ptab" data-ptab="antropometria" id="ptab-antropometria"></div>
+
+        <div class="ptab" data-ptab="laboratorios">
+          <div class="section-title" style="margin-top:0;"><h3>Laboratorios</h3><button class="btn btn-sm" id="btn-add-lab">＋ Agregar prueba personalizada</button></div>
+          <div class="table-wrap"><table><thead><tr><th>Prueba</th><th>Valor</th><th>Fecha</th><th>Unidad</th><th>Rango de referencia</th><th>Tendencia</th><th></th></tr></thead><tbody id="labs-body"></tbody></table></div>
+        </div>
+
+        <div class="ptab" data-ptab="medicacion">
+          <div class="section-title" style="margin-top:0;"><h3>Medicamentos</h3><button class="btn btn-sm" id="btn-add-med">＋ Añadir medicamento</button></div>
+          <div class="table-wrap"><table><thead><tr><th>Nombre</th><th>Dosis</th><th>Frecuencia</th><th>Vía</th><th>Inicio</th><th>Fin</th><th>Motivo</th><th>Estado</th><th></th></tr></thead><tbody id="meds-body"></tbody></table></div>
+          <div class="section-title"><h3>Suplementos</h3><button class="btn btn-sm" id="btn-add-supp">＋ Añadir suplemento</button></div>
+          <div class="table-wrap"><table><thead><tr><th>Nombre</th><th>Ingrediente</th><th>Dosis</th><th>Motivo</th><th>Fuente</th><th>Estado</th><th></th></tr></thead><tbody id="supps-body"></tbody></table></div>
+        </div>
+
+        <div class="ptab" data-ptab="linea">
+          <div class="tl-filters" id="tl-filters"></div>
+          <div class="timeline" id="timeline"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div class="ai-scrim" id="ai-scrim"></div>
+<button class="ai-fab" id="ai-fab">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l1.8 4.6L18 9l-4.2 1.4L12 15l-1.8-4.6L6 9l4.2-1.4z"/><path d="M19 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg>
+  Asistente IA
+</button>
+<aside class="ai-panel" id="ai-panel">
+  <div class="ai-head">
+    <h3><span class="dot-live"></span> Asistente clínico-documental</h3>
+    <button class="btn btn-ghost btn-sm" id="ai-close">Cerrar</button>
+  </div>
+  <div class="ai-context" id="ai-context">Analizando historia de —</div>
+  <div class="ai-body" id="ai-body">
+    <div class="ai-actions" id="ai-actions"></div>
+    <div class="ai-ask-row">
+      <input type="text" id="ai-ask-input" placeholder="Preguntar sobre esta historia clínica…">
+      <button class="btn btn-primary btn-sm" id="ai-ask-btn">Preguntar</button>
+    </div>
+    <div id="ai-messages" style="display:flex; flex-direction:column; gap:10px;"></div>
+  </div>
+  <div class="ai-foot">Basado únicamente en información documentada en la ficha abierta y actualizada al momento. No sustituye el juicio clínico profesional.</div>
+</aside>
+
+<div class="modal-scrim" id="modal-scrim"><div class="modal" id="modal-box" role="dialog" aria-modal="true"></div></div>
+<div id="toast-container"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* =====================================================================
+   ARQUITECTURA
+   UI (render*, event listeners)
+     -> Services (PatientService, ConsultaService, LabService, etc.)
+        -> Repo (conoce el "esquema": qué se guarda y bajo qué clave)
+           -> StorageAdapter (implementación de persistencia intercambiable)
+   Para conectar un backend real más adelante: escribir un nuevo
+   StorageAdapter con los mismos métodos (load/save) y usarlo en vez de
+   LocalStorageAdapter. Nada por encima de Repo necesita cambiar.
+   ===================================================================== */
+
+/* ================= utilities ================= */
+function el(tag, cls, html){ var e=document.createElement(tag); if(cls) e.className=cls; if(html!==undefined) e.innerHTML=html; return e; }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function normalize(s){ return String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase(); }
+function uid(prefix){ return (prefix||'id')+'_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8); }
+function clone(o){ return JSON.parse(JSON.stringify(o)); }
+var MESES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+var MESES_IDX = {ene:0,feb:1,mar:2,abr:3,may:4,jun:5,jul:6,ago:7,sep:8,oct:9,nov:10,dic:11};
+var DIAS = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+function fmtDate(d){ return d.getDate()+' '+MESES[d.getMonth()]+' '+d.getFullYear(); }
+function todayLabel(){ return fmtDate(new Date()); }
+function todayISO(){ var d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function parseDateEs(s){
+  var parts = String(s).toLowerCase().split(' ');
+  if(parts.length<3) return 0;
+  var day = parseInt(parts[0],10), mon = MESES_IDX[parts[1]], year = parseInt(parts[2],10);
+  if(isNaN(day)||mon===undefined||isNaN(year)) return 0;
+  return new Date(year, mon, day).getTime();
+}
+function isoToLabel(iso){
+  if(!iso) return '';
+  var parts = iso.split('-'); if(parts.length!==3) return iso;
+  var d = new Date(parseInt(parts[0],10), parseInt(parts[1],10)-1, parseInt(parts[2],10));
+  return fmtDate(d);
+}
+function timeAgo(ts){
+  if(!ts) return '';
+  var diff = Date.now() - ts;
+  if(diff < 0) diff = 0;
+  var min = Math.floor(diff/60000);
+  if(min < 1) return 'justo ahora';
+  if(min < 60) return 'hace '+min+' min';
+  var hr = Math.floor(min/60);
+  if(hr < 24) return 'hace '+hr+' h';
+  var day = Math.floor(hr/24);
+  if(day < 30) return 'hace '+day+(day===1?' día':' días');
+  var mon = Math.floor(day/30);
+  if(mon < 12) return 'hace '+mon+(mon===1?' mes':' meses');
+  var yr = Math.floor(mon/12);
+  return 'hace '+yr+(yr===1?' año':' años');
+}
+
+/* ================= status model (point 16 of the audit) =================
+   Un único vocabulario para "no hay dato", usado de forma consistente en
+   antecedentes y revisión por sistemas, en vez de mezclar "-", "N/A",
+   "ausente" y "por documentar" sin criterio. */
+var STATUS = { NOT_EVALUATED:'no_evaluado', NOT_DOCUMENTED:'por_documentar', ABSENT:'ausente', PRESENT:'presente', UNKNOWN:'desconocido', NOT_APPLICABLE:'no_aplica' };
+var STATUS_LABEL = { no_evaluado:'No evaluado', por_documentar:'Por documentar', ausente:'Ausente', presente:'Presente', desconocido:'Desconocido', no_aplica:'No aplica' };
+var STATUS_TONE = { no_evaluado:'neutral', por_documentar:'neutral', ausente:'good', presente:'warn', desconocido:'neutral', no_aplica:'neutral' };
+var STATUS_ORDER = [STATUS.NOT_EVALUATED, STATUS.PRESENT, STATUS.ABSENT];
+
+/* ================= persistence layer ================= */
+var DB_KEY = 'vitalis-clinical-db-v3';
+// ApiAdapter reemplaza a LocalStorageAdapter: el STATE completo se persiste
+// contra el backend (FastAPI + base de datos) en vez de localStorage.
+// SaveStatus: red de seguridad para que un guardado fallido nunca pase
+// desapercibido. Sin esto, un fallo silencioso en persist() + un refresh
+// del usuario borra en la práctica el cambio (nunca llegó a la base de
+// datos), aunque la tabla nunca haya perdido una fila.
+var SaveStatus = {
+  hasError: false,
+  markFailed: function(){
+    this.hasError = true;
+    var banner = document.getElementById('save-error-banner');
+    if(!banner){
+      banner = document.createElement('div');
+      banner.id = 'save-error-banner';
+      banner.className = 'save-error-banner';
+      banner.innerHTML = '<span>No se pudo guardar el último cambio en el servidor. No cierres ni recargues la página.</span><button id="save-error-retry" type="button">Reintentar ahora</button>';
+      document.body.appendChild(banner);
+      document.getElementById('save-error-retry').addEventListener('click', function(){ persist(); });
+    }
+    banner.classList.add('show');
+  },
+  markOk: function(){
+    this.hasError = false;
+    var banner = document.getElementById('save-error-banner');
+    if(banner) banner.classList.remove('show');
+  }
+};
+window.addEventListener('beforeunload', function(e){
+  if(SaveStatus.hasError){ e.preventDefault(); e.returnValue = ''; }
+});
+
+var ApiAdapter = {
+  load: async function(){
+    try{
+      var r = await fetch('/api/state');
+      if(r.status === 404) return null;
+      if(!r.ok) throw new Error('GET /api/state -> '+r.status);
+      var body = await r.json();
+      return body.data;
+    }catch(e){ console.error('ApiAdapter.load', e); return null; }
+  },
+  save: async function(_key, value, _attempt){
+    var attempt = _attempt || 0;
+    try{
+      var r = await fetch('/api/state', { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({data:value}) });
+      if(!r.ok) throw new Error('PUT /api/state -> '+r.status);
+      SaveStatus.markOk();
+      return true;
+    }catch(e){
+      console.error('ApiAdapter.save', e, 'intento', attempt+1);
+      if(attempt < 2){
+        await new Promise(function(res){ setTimeout(res, 700*(attempt+1)); });
+        return ApiAdapter.save(_key, value, attempt+1);
+      }
+      SaveStatus.markFailed();
+      return false;
+    }
+  },
+  remove: async function(){
+    try{ await fetch('/api/state', { method:'DELETE' }); }catch(e){ console.error('ApiAdapter.remove', e); }
+  },
+};
+var StorageAdapter = ApiAdapter;
+
+var Repo = {
+  persistAll: function(){
+    return StorageAdapter.save(DB_KEY, { patients: STATE.patients, order: STATE.order, dash: STATE.dash, savedAt: Date.now() });
+  },
+  loadAll: function(){ return StorageAdapter.load(DB_KEY); },
+  clear: function(){ return StorageAdapter.remove(DB_KEY); },
+};
+function persist(){ return Repo.persistAll(); }
+
+/* =====================================================================
+   MODELO DE DATOS (punto 13)
+   Paciente
+   ├── personal            (datos personales editables)
+   ├── antecedentes[]       (registros con status + fecha + observaciones)
+   ├── symptoms[]           (revisión por sistemas, status por síntoma)
+   ├── nutricion            (patron, calidad, conducta, diario[])
+   ├── habitos              (actividad, sueno, estres, hidratacion, sustancias,
+   │                         objetivos[]/barreras[]/facilitadores[], seguimiento[])
+   ├── medicionesAntropometricas[]  (historial fechado, IMC calculado)
+   ├── signosVitales[]      (historial fechado)
+   ├── labs[]               (pruebas con valor/unidad/rango/fecha)
+   ├── medicamentos[]       (con estado activa/inactiva)
+   ├── suplementos[]        (con estado activa/inactiva)
+   ├── consultas[]          (entidades reales con estado borrador/finalizada)
+   ├── resumen              (situacion, objetivos[], problemas[], pendientes[])
+   └── timeline[]           (eventos reales generados por los servicios)
+   ===================================================================== */
+
+function emptyPersonal(){
+  return { nombre:'', apellidos:'', fechaNacimiento:'', sexo:'', documento:'', telefono:'', email:'', direccion:'', contactoEmergencia:'' };
+}
+
+function fullName(p){
+  var n = (p.personal.nombre||'').trim(), a = (p.personal.apellidos||'').trim();
+  return (n+' '+a).trim() || '(sin nombre)';
+}
+function ageFromDob(dob){
+  if(!dob) return null;
+  var d = new Date(dob+'T00:00:00');
+  if(isNaN(d.getTime())) return null;
+  var t = new Date();
+  var age = t.getFullYear() - d.getFullYear();
+  var m = t.getMonth() - d.getMonth();
+  if(m < 0 || (m===0 && t.getDate() < d.getDate())) age--;
+  return age;
+}
+
+/* ================= servicio de eventos / línea temporal ================= */
+var TimelineService = {
+  log: function(p, type, title, desc){
+    p.timeline = p.timeline || [];
+    p.timeline.unshift({ id: uid('tl'), ts: Date.now(), type: type, title: title, desc: desc||'' });
+  }
+};
+
+/* ================= PatientService ================= */
+var PatientService = {
+  create: function(form){
+    var id = uid('pt');
+    var p = {
+      id: id,
+      personal: {
+        nombre: form.nombre||'', apellidos: form.apellidos||'', fechaNacimiento: form.fechaNacimiento||'',
+        sexo: form.sexo||'', documento: form.documento||'', telefono: form.telefono||'', email: form.email||'',
+        direccion: '', contactoEmergencia: ''
+      },
+      antecedentes: [],
+      symptoms: clone(SYMPTOM_TEMPLATE),
+      nutricion: { patron:{comidas:'',horarios:'',regularidad:'',fuera:'',preparacion:''}, calidad:{fv:'',proteinas:'',cereales:'',grasas:'',fibra:'',ultraprocesados:'',azucares:'',bebidas:''}, conducta:{hambre:'',saciedad:'',velocidad:'',atencion:'',ansiedad:'',aburrimiento:'',antojos:'',nocturna:''}, diario:[] },
+      habitos: { actividad:{tipo:'',frecuencia:'',duracion:'',intensidad:'',pasos:'',sedentarismo:''}, sueno:{acostarse:'',levantarse:'',duracion:'',calidad:'',latencia:'',somnolencia:''}, estres:{nivel:'',fuentes:'',estrategias:''}, hidratacion:{cantidad:'',tipo:'',distribucion:''}, sustancias:{alcohol:'',tabaco:'',otras:'',pantallas:''}, objetivos:[], barreras:[], facilitadores:[], seguimiento:[] },
+      medicionesAntropometricas: [],
+      signosVitales: [],
+      labs: [],
+      medicamentos: [],
+      suplementos: [],
+      consultas: [],
+      resumen: { situacion:'', objetivos:[], problemas:[], pendientes:[] },
+      timeline: []
+    };
+    TimelineService.log(p, 'paciente', 'Paciente creado', fullName(p)+' se añadió al sistema.');
+    STATE.patients[id] = p;
+    STATE.order.unshift(id);
+    persist();
+    return p;
+  },
+  updatePersonal: function(p, data){
+    p.personal = Object.assign({}, p.personal, data);
+    TimelineService.log(p, 'datos', 'Datos personales actualizados', 'Se actualizó la información personal del paciente.');
+    persist();
+  }
+};
+
+/* ================= AntecedenteService ================= */
+var ANTECEDENTE_CATEGORIAS = [
+  {k:'personales', label:'Antecedentes personales'},
+  {k:'familiares', label:'Antecedentes familiares'},
+  {k:'quirurgicos', label:'Quirúrgicos / hospitalizaciones'},
+  {k:'alergias', label:'Alergias e intolerancias'},
+  {k:'reproductiva', label:'Salud reproductiva'},
+  {k:'nutricional', label:'Antecedentes nutricionales'}
+];
+var AntecedenteService = {
+  add: function(p, data){
+    var rec = { id: uid('ant'), categoria: data.categoria, status: data.status||STATUS.NOT_DOCUMENTED, descripcion: data.descripcion||'', fecha: data.fecha||todayISO(), observaciones: data.observaciones||'' };
+    p.antecedentes.push(rec);
+    TimelineService.log(p, 'antecedente', 'Antecedente actualizado', catLabel(data.categoria)+': '+STATUS_LABEL[rec.status]);
+    persist();
+    return rec;
+  },
+  update: function(p, id, data){
+    var rec = p.antecedentes.find(function(a){ return a.id===id; });
+    if(!rec) return null;
+    Object.assign(rec, data);
+    TimelineService.log(p, 'antecedente', 'Antecedente actualizado', catLabel(rec.categoria)+': '+STATUS_LABEL[rec.status]);
+    persist();
+    return rec;
+  },
+  remove: function(p, id){
+    p.antecedentes = p.antecedentes.filter(function(a){ return a.id!==id; });
+    persist();
+  }
+};
+function catLabel(k){ var c = ANTECEDENTE_CATEGORIAS.find(function(x){ return x.k===k; }); return c ? c.label : k; }
+
+/* ================= NutricionService ================= */
+var NutricionService = {
+  updateSection: function(p, section, data){
+    p.nutricion[section] = Object.assign({}, p.nutricion[section], data);
+    TimelineService.log(p, 'nutricion', 'Información nutricional actualizada', 'Se actualizó "'+NUTRI_SECTION_LABEL[section]+'".');
+    persist();
+  },
+  addDiario: function(p, data){
+    var rec = { id: uid('diario'), fecha: data.fecha||todayISO(), hora: data.hora||'', comida: data.comida||'', alimentos: data.alimentos||'', hambre: data.hambre||'', saciedad: data.saciedad||'', contexto: data.contexto||'' };
+    p.nutricion.diario.unshift(rec);
+    TimelineService.log(p, 'nutricion', 'Registro de diario alimentario añadido', rec.comida || 'Nuevo registro');
+    persist();
+    return rec;
+  },
+  removeDiario: function(p, id){
+    p.nutricion.diario = p.nutricion.diario.filter(function(d){ return d.id!==id; });
+    persist();
+  }
+};
+var NUTRI_SECTION_LABEL = { patron:'Patrón alimentario', calidad:'Calidad y composición', conducta:'Conducta alimentaria' };
+
+/* ================= HabitoService ================= */
+var HABITO_DOMAIN_LABEL = { actividad:'Actividad física', sueno:'Sueño', estres:'Estrés', hidratacion:'Hidratación', sustancias:'Sustancias' };
+var HabitoService = {
+  updateDomain: function(p, domain, data){
+    p.habitos[domain] = Object.assign({}, p.habitos[domain], data);
+    TimelineService.log(p, 'habito', 'Hábito actualizado', HABITO_DOMAIN_LABEL[domain]+' se documentó.');
+    persist();
+  },
+  addTag: function(p, list, texto){
+    if(!texto || !texto.trim()) return;
+    p.habitos[list].push({ id: uid('tag'), texto: texto.trim() });
+    persist();
+  },
+  removeTag: function(p, list, id){
+    p.habitos[list] = p.habitos[list].filter(function(t){ return t.id!==id; });
+    persist();
+  },
+  addSeguimiento: function(p, data){
+    var rec = { id: uid('seg'), semana: data.semana||('Semana '+(p.habitos.seguimiento.length+1)), actividad: Number(data.actividad)||0, alimentacion: Number(data.alimentacion)||0, notas: data.notas||'' };
+    p.habitos.seguimiento.push(rec);
+    TimelineService.log(p, 'habito', 'Seguimiento de objetivos registrado', rec.semana);
+    persist();
+    return rec;
+  }
+};
+
+/* ================= AntropometriaService / VitalsService ================= */
+var AntropometriaService = {
+  addMedicion: function(p, data){
+    var peso = data.peso!==''&&data.peso!=null ? Number(data.peso) : null;
+    var talla = data.talla!==''&&data.talla!=null ? Number(data.talla) : null;
+    var imc = (peso && talla) ? +(peso / Math.pow(talla/100,2)).toFixed(1) : null;
+    var rec = { id: uid('antro'), fecha: data.fecha||todayISO(), peso: peso, talla: talla, imc: imc, abdominal: data.abdominal||'', cintura: data.cintura||'', cadera: data.cadera||'', graso: data.graso||'', muscular: data.muscular||'', observaciones: data.observaciones||'' };
+    p.medicionesAntropometricas.push(rec);
+    p.medicionesAntropometricas.sort(function(a,b){ return a.fecha < b.fecha ? -1 : 1; });
+    TimelineService.log(p, 'antropometria', 'Antropometría registrada', 'Peso '+(peso!=null?peso+' kg':'—')+(imc?(' · IMC '+imc):'')+' ('+isoToLabel(rec.fecha)+')');
+    persist();
+    return rec;
+  },
+  removeMedicion: function(p, id){
+    p.medicionesAntropometricas = p.medicionesAntropometricas.filter(function(m){ return m.id!==id; });
+    persist();
+  }
+};
+var VitalsService = {
+  addRegistro: function(p, data){
+    var rec = { id: uid('vit'), fecha: data.fecha||todayISO(), fc: data.fc||'', ta: data.ta||'', temp: data.temp||'', spo2: data.spo2||'', observaciones: data.observaciones||'' };
+    p.signosVitales.push(rec);
+    p.signosVitales.sort(function(a,b){ return a.fecha < b.fecha ? -1 : 1; });
+    TimelineService.log(p, 'vitales', 'Signos vitales registrados', isoToLabel(rec.fecha));
+    persist();
+    return rec;
+  },
+  removeRegistro: function(p, id){
+    p.signosVitales = p.signosVitales.filter(function(v){ return v.id!==id; });
+    persist();
+  }
+};
+function getLatestAntro(p){ return p.medicionesAntropometricas.length ? p.medicionesAntropometricas[p.medicionesAntropometricas.length-1] : null; }
+function getLatestVitals(p){ return p.signosVitales.length ? p.signosVitales[p.signosVitales.length-1] : null; }
+
+/* ================= LabService ================= */
+var LabService = {
+  add: function(p, data){
+    var rec = { id: uid('lab'), nombre: data.nombre, valor: data.valor||'', unidad: data.unidad||'', rango: data.rango||'', fecha: data.fecha||todayISO(), tendencia: data.tendencia||'estable', observaciones: data.observaciones||'' };
+    p.labs.unshift(rec);
+    TimelineService.log(p, 'lab', 'Laboratorio añadido', rec.nombre+': '+rec.valor+' '+rec.unidad);
+    persist();
+    return rec;
+  },
+  update: function(p, id, data){
+    var rec = p.labs.find(function(l){ return l.id===id; });
+    if(!rec) return null;
+    Object.assign(rec, data);
+    TimelineService.log(p, 'lab', 'Laboratorio actualizado', rec.nombre+': '+rec.valor+' '+rec.unidad);
+    persist();
+    return rec;
+  },
+  remove: function(p, id){
+    p.labs = p.labs.filter(function(l){ return l.id!==id; });
+    persist();
+  }
+};
+
+/* ================= MedicacionService (medicamentos y suplementos) ================= */
+var MedicacionService = {
+  add: function(p, kind, data){
+    var arr = kind==='med' ? p.medicamentos : p.suplementos;
+    var rec = kind==='med'
+      ? { id: uid('med'), nombre:data.nombre, dosis:data.dosis||'', frecuencia:data.frecuencia||'', via:data.via||'', inicio:data.inicio||todayISO(), fin:data.fin||'', estado:'activa', motivo:data.motivo||'', prescriptor:data.prescriptor||'', observaciones:data.observaciones||'' }
+      : { id: uid('sup'), nombre:data.nombre, ingrediente:data.ingrediente||'', dosis:data.dosis||'', motivo:data.motivo||'', fuente:data.fuente||'', estado:'activa', inicio:data.inicio||todayISO(), fin:data.fin||'', observaciones:data.observaciones||'' };
+    arr.unshift(rec);
+    TimelineService.log(p, 'medicacion', (kind==='med'?'Medicamento añadido':'Suplemento añadido'), rec.nombre);
+    persist();
+    return rec;
+  },
+  update: function(p, kind, id, data){
+    var arr = kind==='med' ? p.medicamentos : p.suplementos;
+    var rec = arr.find(function(m){ return m.id===id; });
+    if(!rec) return null;
+    Object.assign(rec, data);
+    persist();
+    return rec;
+  },
+  toggleEstado: function(p, kind, id){
+    var arr = kind==='med' ? p.medicamentos : p.suplementos;
+    var rec = arr.find(function(m){ return m.id===id; });
+    if(!rec) return;
+    rec.estado = rec.estado==='activa' ? 'inactiva' : 'activa';
+    if(rec.estado==='inactiva' && !rec.fin) rec.fin = todayISO();
+    TimelineService.log(p, 'medicacion', (kind==='med'?'Medicamento':'Suplemento')+' '+(rec.estado==='activa'?'reactivado':'desactivado'), rec.nombre);
+    persist();
+  }
+};
+
+/* ================= ConsultaService ================= */
+var ConsultaService = {
+  start: function(p){
+    var rec = { id: uid('cons'), fecha: todayISO(), hora: new Date().toTimeString().slice(0,5), profesional:'Dra. Erika Abril', motivo:'', expectativas:'', objetivos:'', prioridades:'', inicio:'', frecuencia:'', desencadenantes:'', alivian:'', notas:'', evaluacion:'', plan:'', estado:'borrador', creadoEn: Date.now(), actualizadoEn: Date.now() };
+    p.consultas.unshift(rec);
+    persist();
+    return rec;
+  },
+  getDraft: function(p){
+    return p.consultas.find(function(c){ return c.estado==='borrador'; }) || null;
+  },
+  saveDraft: function(p, id, data){
+    var rec = p.consultas.find(function(c){ return c.id===id; });
+    if(!rec) return null;
+    Object.assign(rec, data, { actualizadoEn: Date.now() });
+    TimelineService.log(p, 'consulta', 'Borrador de consulta guardado', rec.motivo || 'Sin motivo registrado aún');
+    persist();
+    return rec;
+  },
+  finalize: function(p, id, data){
+    var rec = p.consultas.find(function(c){ return c.id===id; });
+    if(!rec) return null;
+    Object.assign(rec, data, { estado:'finalizada', actualizadoEn: Date.now() });
+    TimelineService.log(p, 'consulta', 'Consulta finalizada', rec.motivo);
+    persist();
+    return rec;
+  },
+  cancelDraft: function(p, id){
+    p.consultas = p.consultas.filter(function(c){ return c.id!==id; });
+    persist();
+  },
+  update: function(p, id, data){
+    var rec = p.consultas.find(function(c){ return c.id===id; });
+    if(!rec) return null;
+    Object.assign(rec, data, { actualizadoEn: Date.now() });
+    persist();
+    return rec;
+  }
+};
+
+/* ================= ResumenService ================= */
+var ResumenService = {
+  update: function(p, data){
+    p.resumen = Object.assign({}, p.resumen, data);
+    TimelineService.log(p, 'resumen', 'Resumen clínico actualizado', 'Se actualizó la situación general, objetivos, problemas o pendientes.');
+    persist();
+  }
+};
+
+/* ================= SymptomService ================= */
+function cycleSymptomStatus(p, id){
+  var s = p.symptoms.find(function(x){ return x.id===id; });
+  if(!s) return;
+  var order = [STATUS.NOT_EVALUATED, STATUS.PRESENT, STATUS.ABSENT];
+  var idx = order.indexOf(s.status);
+  s.status = order[(idx+1) % order.length];
+  TimelineService.log(p, 'sintoma', 'Síntoma actualizado', s.nombre+': '+STATUS_LABEL[s.status]);
+  persist();
+}
+
+/* ================= plantilla de revisión por sistemas ================= */
+var SYMPTOM_CATS = [
+  {k:'digestivo', label:'Digestivo', items:['Distensión abdominal','Reflujo','Estreñimiento','Diarrea','Náuseas','Dolor abdominal']},
+  {k:'energia', label:'Energía y ánimo', items:['Fatiga','Bajo ánimo','Irritabilidad','Ansiedad','Niebla mental','Somnolencia diurna']},
+  {k:'musculo', label:'Musculoesquelético', items:['Dolor articular','Dolor muscular','Rigidez matutina','Calambres','Debilidad']},
+  {k:'piel', label:'Piel y faneras', items:['Acné','Piel seca','Caída de cabello','Uñas quebradizas','Erupciones']},
+  {k:'hormonal', label:'Hormonal / reproductivo', items:['Ciclos irregulares','Cambios de libido','Sofocos','Retención de líquidos']},
+  {k:'inmune', label:'Inmune / respiratorio', items:['Infecciones frecuentes','Congestión nasal','Alergias estacionales','Tos crónica']}
+];
+function buildSymptomTemplate(){
+  var out = [];
+  SYMPTOM_CATS.forEach(function(cat){
+    cat.items.forEach(function(name){
+      out.push({ id: uid('sx'), categoria: cat.k, nombre: name, status: STATUS.NOT_EVALUATED });
+    });
+  });
+  return out;
+}
+var SYMPTOM_TEMPLATE = buildSymptomTemplate();
+
+/* ================= datos de ejemplo (semilla) ================= */
+function mkPatientSeed(cfg){
+  var p = {
+    id: cfg.id,
+    personal: cfg.personal,
+    antecedentes: cfg.antecedentes || [],
+    symptoms: clone(SYMPTOM_TEMPLATE).map(function(s){
+      var override = (cfg.symptomStatus||{})[s.nombre];
+      if(override) s.status = override;
+      return s;
+    }),
+    nutricion: cfg.nutricion,
+    habitos: cfg.habitos,
+    medicionesAntropometricas: cfg.medicionesAntropometricas || [],
+    signosVitales: cfg.signosVitales || [],
+    labs: cfg.labs || [],
+    medicamentos: cfg.medicamentos || [],
+    suplementos: cfg.suplementos || [],
+    consultas: cfg.consultas || [],
+    resumen: cfg.resumen,
+    timeline: []
+  };
+  (cfg.timelineSeed||[]).forEach(function(t){
+    p.timeline.push({ id: uid('tl'), ts: t.ts, type: t.type, title: t.title, desc: t.desc||'' });
+  });
+  p.timeline.sort(function(a,b){ return b.ts - a.ts; });
+  return p;
+}
+
+function daysAgo(n){ return Date.now() - n*86400000; }
+function daysISOAgo(n){ var d = new Date(Date.now() - n*86400000); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+
+function seedPatients(){
+  var patients = {};
+
+  patients.camila = mkPatientSeed({
+    id:'camila',
+    personal:{ nombre:'Camila', apellidos:'Restrepo Vélez', fechaNacimiento:'1990-04-12', sexo:'Femenino', documento:'CC 1 020 456 789', telefono:'+57 300 555 1234', email:'camila.restrepo@example.com', direccion:'Bogotá, Colombia', contactoEmergencia:'Luisa Vélez (madre) · +57 301 555 9988' },
+    antecedentes:[
+      {id:uid('ant'),categoria:'personales',status:STATUS.PRESENT,descripcion:'Hipotiroidismo subclínico diagnosticado en 2021, en manejo.',fecha:'2021-06-10',observaciones:'Control anual de TSH.'},
+      {id:uid('ant'),categoria:'familiares',status:STATUS.PRESENT,descripcion:'Madre con hipotiroidismo; padre con hipertensión arterial.',fecha:'2024-01-15',observaciones:''},
+      {id:uid('ant'),categoria:'quirurgicos',status:STATUS.ABSENT,descripcion:'',fecha:'2024-01-15',observaciones:'Sin cirugías previas referidas.'},
+      {id:uid('ant'),categoria:'alergias',status:STATUS.PRESENT,descripcion:'Alergia a penicilina (rash cutáneo).',fecha:'2015-03-02',observaciones:''},
+      {id:uid('ant'),categoria:'reproductiva',status:STATUS.NOT_DOCUMENTED,descripcion:'',fecha:'',observaciones:''},
+      {id:uid('ant'),categoria:'nutricional',status:STATUS.PRESENT,descripcion:'Intento de dieta vegetariana durante 2 años (2019-2021), abandonada por fatiga.',fecha:'2021-02-01',observaciones:''}
+    ],
+    symptomStatus:{'Distensión abdominal':STATUS.PRESENT,'Fatiga':STATUS.PRESENT,'Niebla mental':STATUS.PRESENT,'Estreñimiento':STATUS.PRESENT,'Ciclos irregulares':STATUS.ABSENT,'Dolor articular':STATUS.ABSENT},
+    nutricion:{
+      patron:{comidas:'3 comidas principales + 1 snack a media tarde', horarios:'Desayuno 7:30, almuerzo 12:30, cena 19:30', regularidad:'Regular en días laborales, irregular en fines de semana', fuera:'2-3 veces por semana (almuerzo de trabajo)', preparacion:'Cocina en casa la mayoría de cenas; almuerzos frecuentemente comprados'},
+      calidad:{fv:'2-3 porciones/día', proteinas:'Adecuada en almuerzo, baja en desayuno', cereales:'Predominan refinados (pan blanco, arroz blanco)', grasas:'Uso frecuente de aceites vegetales procesados', fibra:'Por debajo de lo recomendado', ultraprocesados:'Consumo frecuente de snacks empacados', azucares:'Café con azúcar 2 veces al día', bebidas:'Café 2-3 tazas/día, agua limitada'},
+      conducta:{hambre:'Reconoce señales de hambre con dificultad en las mañanas', saciedad:'Tiende a comer hasta sentirse muy llena', velocidad:'Come rápido, especialmente en almuerzos de trabajo', atencion:'Frecuentemente come frente a pantallas', ansiedad:'Refiere "comer por ansiedad" en tardes de mucho trabajo', aburrimiento:STATUS_LABEL[STATUS.NOT_DOCUMENTED], antojos:'Antojos de dulce a media tarde', nocturna:'Ocasional picoteo nocturno viendo televisión'},
+      diario:[
+        {id:uid('diario'),fecha:daysISOAgo(1),hora:'08:00',comida:'Desayuno',alimentos:'Café con azúcar, pan blanco con mermelada',hambre:'3',saciedad:'6',contexto:'Apurada, revisando el celular'},
+        {id:uid('diario'),fecha:daysISOAgo(1),hora:'13:00',comida:'Almuerzo',alimentos:'Arroz, pollo, ensalada pequeña, jugo',hambre:'7',saciedad:'9',contexto:'Almuerzo de trabajo, comió rápido'}
+      ]
+    },
+    habitos:{
+      actividad:{tipo:'Caminatas ocasionales', frecuencia:'1-2 veces/semana', duracion:'30 min', intensidad:'Baja-moderada', pasos:'~4500/día', sedentarismo:'8+ horas sentada por trabajo de oficina'},
+      sueno:{acostarse:'23:30', levantarse:'06:30', duracion:'~7h', calidad:'Regular, despertares nocturnos frecuentes', latencia:'20-30 min para conciliar el sueño', somnolencia:'Somnolencia leve en las tardes'},
+      estres:{nivel:'Moderado-alto', fuentes:'Carga laboral, plazos de entrega', estrategias:'Ninguna estrategia estructurada actualmente'},
+      hidratacion:{cantidad:'~1 litro/día', tipo:'Agua y café', distribucion:'Concentrada en la mañana'},
+      sustancias:{alcohol:'Social, 1-2 copas de vino los fines de semana', tabaco:'No fuma', otras:'Ninguna reportada', pantallas:'~3h de pantallas recreativas antes de dormir'},
+      objetivos:[{id:uid('tag'),texto:'Dormir 7.5h consistentes'},{id:uid('tag'),texto:'Caminar 3 veces/semana'}],
+      barreras:[{id:uid('tag'),texto:'Horario laboral extenso'},{id:uid('tag'),texto:'Fatiga vespertina'}],
+      facilitadores:[{id:uid('tag'),texto:'Buena adherencia cuando planifica la semana'}],
+      seguimiento:[
+        {id:uid('seg'),semana:'Semana 1',actividad:40,alimentacion:55,notas:'Primera semana de seguimiento.'},
+        {id:uid('seg'),semana:'Semana 2',actividad:55,alimentacion:60,notas:'Logró 2 caminatas.'}
+      ]
+    },
+    medicionesAntropometricas:[
+      {id:uid('antro'),fecha:daysISOAgo(120),peso:72,talla:165,imc:26.4,abdominal:88,cintura:84,cadera:104,graso:'32%',muscular:'28%',observaciones:'Primera valoración.'},
+      {id:uid('antro'),fecha:daysISOAgo(30),peso:70,talla:165,imc:25.7,abdominal:86,cintura:82,cadera:103,graso:'31%',muscular:'28%',observaciones:'Leve mejoría.'}
+    ],
+    signosVitales:[
+      {id:uid('vit'),fecha:daysISOAgo(30),fc:'78',ta:'118/76',temp:'36.5',spo2:'98',observaciones:''}
+    ],
+    labs:[
+      {id:uid('lab'),nombre:'TSH',valor:'4.1',unidad:'mUI/L',rango:'0.4 - 4.0',fecha:daysISOAgo(45),tendencia:'subiendo',observaciones:'Levemente por encima del rango; correlacionar con clínica.'},
+      {id:uid('lab'),nombre:'Ferritina',valor:'22',unidad:'ng/mL',rango:'20 - 200',fecha:daysISOAgo(45),tendencia:'estable',observaciones:'En el límite inferior.'},
+      {id:uid('lab'),nombre:'Vitamina D (25-OH)',valor:'24',unidad:'ng/mL',rango:'30 - 100',fecha:daysISOAgo(45),tendencia:'bajando',observaciones:'Insuficiencia.'}
+    ],
+    medicamentos:[
+      {id:uid('med'),nombre:'Levotiroxina',dosis:'50 mcg',frecuencia:'1 vez/día en ayunas',via:'Oral',inicio:'2021-06-15',fin:'',estado:'activa',motivo:'Hipotiroidismo subclínico',prescriptor:'Dr. Mendoza (endocrinología)',observaciones:''}
+    ],
+    suplementos:[
+      {id:uid('sup'),nombre:'Vitamina D3',ingrediente:'Colecalciferol',dosis:'2000 UI/día',motivo:'Insuficiencia de vitamina D',fuente:'Recomendado en esta consulta',estado:'activa',inicio:daysISOAgo(45),fin:'',observaciones:''}
+    ],
+    consultas:[
+      {id:uid('cons'),fecha:daysISOAgo(45),hora:'10:00',profesional:'Dra. Erika Abril',motivo:'Fatiga persistente y distensión abdominal',expectativas:'Entender la causa de su cansancio',objetivos:'Mejorar energía y digestión',prioridades:'Revisar tiroides y hábito intestinal',inicio:'Hace ~6 meses, progresivo',frecuencia:'Diaria, peor en las tardes',desencadenantes:'Estrés laboral, comidas copiosas',alivian:'Descanso, comidas más pequeñas',notas:'Paciente refiere fatiga progresiva y distensión postprandial. Ciclos menstruales regulares. Buena adherencia a indicaciones previas.',evaluacion:'Hipotiroidismo subclínico con síntomas digestivos funcionales asociados a hábitos alimentarios y estrés.',plan:'Ajustar levotiroxina, suplementar vitamina D, iniciar plan nutricional antiinflamatorio, técnicas de manejo de estrés.',estado:'finalizada',creadoEn:daysAgo(45),actualizadoEn:daysAgo(45)}
+    ],
+    resumen:{
+      situacion:'Paciente en seguimiento por hipotiroidismo subclínico con síntomas digestivos funcionales (distensión, estreñimiento) y fatiga, en el contexto de alto estrés laboral y patrón alimentario irregular.',
+      objetivos:[{id:uid('tag'),texto:'Reducir fatiga'},{id:uid('tag'),texto:'Mejorar digestión'},{id:uid('tag'),texto:'Optimizar función tiroidea'}],
+      problemas:[{id:uid('prob'),nombre:'Hipotiroidismo subclínico',estado:'En seguimiento',tone:'warn'},{id:uid('prob'),nombre:'Distensión abdominal funcional',estado:'Activo',tone:'warn'},{id:uid('prob'),nombre:'Insuficiencia de vitamina D',estado:'En tratamiento',tone:'info'}],
+      pendientes:[{id:uid('pend'),texto:'Repetir TSH y vitamina D en 8 semanas',fecha:daysISOAgo(-15)},{id:uid('pend'),texto:'Enviar diario alimentario de 3 días',fecha:daysISOAgo(-5)}]
+    },
+    timelineSeed:[
+      {ts:daysAgo(45),type:'consulta',title:'Consulta finalizada',desc:'Fatiga persistente y distensión abdominal'},
+      {ts:daysAgo(45),type:'lab',title:'Laboratorios añadidos',desc:'TSH, ferritina, vitamina D'},
+      {ts:daysAgo(45),type:'medicacion',title:'Suplemento añadido',desc:'Vitamina D3'},
+      {ts:daysAgo(400),type:'paciente',title:'Paciente creado',desc:'Camila Restrepo Vélez se añadió al sistema.'}
+    ]
+  });
+
+  patients.julian = mkPatientSeed({
+    id:'julian',
+    personal:{ nombre:'Julián', apellidos:'Ibarra Peña', fechaNacimiento:'1985-11-03', sexo:'Masculino', documento:'CC 1 018 223 456', telefono:'+57 310 444 2211', email:'julian.ibarra@example.com', direccion:'Medellín, Colombia', contactoEmergencia:'' },
+    antecedentes:[
+      {id:uid('ant'),categoria:'personales',status:STATUS.PRESENT,descripcion:'Prediabetes diagnosticada en 2023 (HbA1c 5.9%).',fecha:'2023-09-01',observaciones:''},
+      {id:uid('ant'),categoria:'familiares',status:STATUS.PRESENT,descripcion:'Padre con diabetes tipo 2 y enfermedad coronaria.',fecha:'2023-09-01',observaciones:''},
+      {id:uid('ant'),categoria:'quirurgicos',status:STATUS.PRESENT,descripcion:'Apendicectomía en 2010.',fecha:'2010-05-20',observaciones:''},
+      {id:uid('ant'),categoria:'alergias',status:STATUS.ABSENT,descripcion:'',fecha:'2023-09-01',observaciones:'Niega alergias medicamentosas o alimentarias.'},
+      {id:uid('ant'),categoria:'reproductiva',status:STATUS.NOT_APPLICABLE,descripcion:'',fecha:'',observaciones:''},
+      {id:uid('ant'),categoria:'nutricional',status:STATUS.NOT_DOCUMENTED,descripcion:'',fecha:'',observaciones:''}
+    ],
+    symptomStatus:{'Fatiga':STATUS.PRESENT,'Somnolencia diurna':STATUS.PRESENT,'Dolor articular':STATUS.ABSENT,'Distensión abdominal':STATUS.ABSENT},
+    nutricion:{
+      patron:{comidas:'2 comidas principales, salta el desayuno frecuentemente', horarios:'Almuerzo 14:00, cena 21:00', regularidad:'Irregular por viajes de trabajo', fuera:'La mayoría de comidas fuera de casa', preparacion:'Rara vez cocina en casa'},
+      calidad:{fv:'1 porción/día o menos', proteinas:'Alta en cenas (carnes rojas frecuentes)', cereales:STATUS_LABEL[STATUS.NOT_DOCUMENTED], grasas:'Frituras frecuentes', fibra:'Muy baja', ultraprocesados:'Alto consumo (comidas rápidas 3-4 veces/semana)', azucares:'Bebidas azucaradas casi a diario', bebidas:'Gaseosas y jugos industriales'},
+      conducta:{hambre:STATUS_LABEL[STATUS.NOT_DOCUMENTED], saciedad:'No percibe saciedad hasta sentirse muy lleno', velocidad:'Come muy rápido', atencion:'Casi siempre comiendo mientras trabaja', ansiedad:STATUS_LABEL[STATUS.NOT_DOCUMENTED], aburrimiento:STATUS_LABEL[STATUS.NOT_DOCUMENTED], antojos:'Antojos de sal y frituras nocturnas', nocturna:'Cena tardía frecuente (después de 21:00)'},
+      diario:[]
+    },
+    habitos:{
+      actividad:{tipo:'Ninguna estructurada', frecuencia:'Prácticamente nula', duracion:'-', intensidad:'-', pasos:'~2000/día', sedentarismo:'10+ horas sentado (viajes y oficina)'},
+      sueno:{acostarse:'00:30', levantarse:'06:00', duracion:'~5.5h', calidad:'Pobre, no reparador', latencia:STATUS_LABEL[STATUS.NOT_DOCUMENTED], somnolencia:'Marcada durante el día'},
+      estres:{nivel:'Alto', fuentes:'Viajes constantes, responsabilidad gerencial', estrategias:'Ninguna'},
+      hidratacion:{cantidad:'Menos de 1 litro/día', tipo:'Principalmente café y gaseosas', distribucion:STATUS_LABEL[STATUS.NOT_DOCUMENTED]},
+      sustancias:{alcohol:'3-4 veces/semana, cantidad moderada-alta', tabaco:'Exfumador (dejó hace 5 años)', otras:'Ninguna reportada', pantallas:STATUS_LABEL[STATUS.NOT_DOCUMENTED]},
+      objetivos:[{id:uid('tag'),texto:'Reducir HbA1c'},{id:uid('tag'),texto:'Dormir más de 7h'}],
+      barreras:[{id:uid('tag'),texto:'Viajes frecuentes'},{id:uid('tag'),texto:'Poca disponibilidad de tiempo'}],
+      facilitadores:[],
+      seguimiento:[]
+    },
+    medicionesAntropometricas:[
+      {id:uid('antro'),fecha:daysISOAgo(60),peso:94,talla:178,imc:29.7,abdominal:104,cintura:102,cadera:106,graso:'27%',muscular:'34%',observaciones:'Primera valoración funcional.'}
+    ],
+    signosVitales:[
+      {id:uid('vit'),fecha:daysISOAgo(60),fc:'82',ta:'132/86',temp:'36.6',spo2:'97',observaciones:'TA en rango de prehipertensión.'}
+    ],
+    labs:[
+      {id:uid('lab'),nombre:'HbA1c',valor:'5.9',unidad:'%',rango:'< 5.7',fecha:daysISOAgo(60),tendencia:'subiendo',observaciones:'Prediabetes.'},
+      {id:uid('lab'),nombre:'Glucosa en ayunas',valor:'104',unidad:'mg/dL',rango:'70 - 99',fecha:daysISOAgo(60),tendencia:'subiendo',observaciones:''},
+      {id:uid('lab'),nombre:'Triglicéridos',valor:'195',unidad:'mg/dL',rango:'< 150',fecha:daysISOAgo(60),tendencia:'estable',observaciones:''}
+    ],
+    medicamentos:[],
+    suplementos:[
+      {id:uid('sup'),nombre:'Magnesio glicinato',ingrediente:'Magnesio',dosis:'400 mg antes de dormir',motivo:'Apoyo para sueño y control glucémico',fuente:'Indicado en esta consulta',estado:'activa',inicio:daysISOAgo(60),fin:'',observaciones:''}
+    ],
+    consultas:[
+      {id:uid('cons'),fecha:daysISOAgo(60),hora:'16:00',profesional:'Dra. Erika Abril',motivo:'Fatiga y hallazgo de prediabetes en chequeo laboral',expectativas:'Evitar progresión a diabetes tipo 2',objetivos:'Bajar HbA1c y mejorar energía',prioridades:'Cambios de alimentación y sueño',inicio:'Hallazgo reciente en examen de rutina',frecuencia:'Constante',desencadenantes:'Comidas altas en azúcares refinados',alivian:'Ninguno identificado aún',notas:'Paciente con alta carga laboral y viajes frecuentes; patrón alimentario muy desestructurado.',evaluacion:'Prediabetes con síndrome metabólico incipiente en contexto de hábitos de vida no saludables.',plan:'Educación nutricional, actividad física progresiva, higiene de sueño, control metabólico en 3 meses.',estado:'finalizada',creadoEn:daysAgo(60),actualizadoEn:daysAgo(60)}
+    ],
+    resumen:{
+      situacion:'Paciente con prediabetes reciente y perfil de riesgo cardiometabólico, en contexto de alta carga laboral, sueño insuficiente y patrón alimentario desestructurado.',
+      objetivos:[{id:uid('tag'),texto:'Prevenir progresión a diabetes tipo 2'},{id:uid('tag'),texto:'Mejorar calidad del sueño'}],
+      problemas:[{id:uid('prob'),nombre:'Prediabetes',estado:'Activo',tone:'bad'},{id:uid('prob'),nombre:'Sueño insuficiente',estado:'Activo',tone:'warn'},{id:uid('prob'),nombre:'Sedentarismo',estado:'Activo',tone:'warn'}],
+      pendientes:[{id:uid('pend'),texto:'Control de HbA1c en 3 meses',fecha:daysISOAgo(-30)}]
+    },
+    timelineSeed:[
+      {ts:daysAgo(60),type:'consulta',title:'Consulta finalizada',desc:'Fatiga y hallazgo de prediabetes'},
+      {ts:daysAgo(60),type:'lab',title:'Laboratorios añadidos',desc:'HbA1c, glucosa, triglicéridos'},
+      {ts:daysAgo(500),type:'paciente',title:'Paciente creado',desc:'Julián Ibarra Peña se añadió al sistema.'}
+    ]
+  });
+
+  patients.marta = mkPatientSeed({
+    id:'marta',
+    personal:{ nombre:'Marta', apellidos:'Zuluaga Ortiz', fechaNacimiento:'1972-02-27', sexo:'Femenino', documento:'CC 43 112 998', telefono:'+57 315 222 6677', email:'', direccion:'Cali, Colombia', contactoEmergencia:'Andrés Zuluaga (hijo) · +57 316 222 1010' },
+    antecedentes:[
+      {id:uid('ant'),categoria:'personales',status:STATUS.PRESENT,descripcion:'Osteopenia diagnosticada en densitometría de 2022. Menopausia a los 50 años.',fecha:'2022-08-10',observaciones:''},
+      {id:uid('ant'),categoria:'familiares',status:STATUS.PRESENT,descripcion:'Madre con osteoporosis y fractura de cadera.',fecha:'2022-08-10',observaciones:''},
+      {id:uid('ant'),categoria:'quirurgicos',status:STATUS.PRESENT,descripcion:'Colecistectomía en 2015.',fecha:'2015-11-02',observaciones:''},
+      {id:uid('ant'),categoria:'alergias',status:STATUS.NOT_DOCUMENTED,descripcion:'',fecha:'',observaciones:''},
+      {id:uid('ant'),categoria:'reproductiva',status:STATUS.PRESENT,descripcion:'Menopausia a los 50 años, sin terapia hormonal.',fecha:'2022-01-01',observaciones:''},
+      {id:uid('ant'),categoria:'nutricional',status:STATUS.PRESENT,descripcion:'Dieta baja en lácteos por intolerancia leve a la lactosa.',fecha:'2020-01-01',observaciones:''}
+    ],
+    symptomStatus:{'Dolor articular':STATUS.PRESENT,'Rigidez matutina':STATUS.PRESENT,'Sofocos':STATUS.PRESENT,'Retención de líquidos':STATUS.ABSENT},
+    nutricion:{
+      patron:{comidas:'3 comidas + 1 merienda', horarios:'Horarios regulares y estables', regularidad:'Muy regular', fuera:'Rara vez come fuera', preparacion:'Cocina en casa la mayoría de las comidas'},
+      calidad:{fv:'4-5 porciones/día', proteinas:'Adecuada, aunque baja en lácteos', cereales:'Mayormente integrales', grasas:'Uso de aceite de oliva, buena calidad', fibra:'Adecuada', ultraprocesados:'Bajo consumo', azucares:'Bajo consumo', bebidas:'Agua e infusiones, sin café'},
+      conducta:{hambre:'Reconoce bien sus señales de hambre', saciedad:'Buena percepción de saciedad', velocidad:'Come pausado', atencion:'Come atenta, sin distracciones', ansiedad:'No refiere', aburrimiento:'No refiere', antojos:'Ocasionales, de dulce', nocturna:'No refiere'},
+      diario:[]
+    },
+    habitos:{
+      actividad:{tipo:'Yoga y caminatas', frecuencia:'3-4 veces/semana', duracion:'45 min', intensidad:'Moderada', pasos:'~6000/día', sedentarismo:'Moderado, trabajo mixto'},
+      sueno:{acostarse:'22:00', levantarse:'05:30', duracion:'~7.5h', calidad:'Buena, con sofocos ocasionales', latencia:'10-15 min', somnolencia:'Ninguna'},
+      estres:{nivel:'Bajo-moderado', fuentes:'Preocupaciones familiares ocasionales', estrategias:'Yoga y meditación'},
+      hidratacion:{cantidad:'~2 litros/día', tipo:'Agua e infusiones', distribucion:'Distribuida a lo largo del día'},
+      sustancias:{alcohol:'Ocasional, 1 copa en eventos sociales', tabaco:'No fuma', otras:'Ninguna', pantallas:'Bajo uso, especialmente antes de dormir'},
+      objetivos:[{id:uid('tag'),texto:'Fortalecer densidad ósea'},{id:uid('tag'),texto:'Mantener actividad física regular'}],
+      barreras:[],
+      facilitadores:[{id:uid('tag'),texto:'Alta motivación y adherencia'},{id:uid('tag'),texto:'Buen soporte familiar'}],
+      seguimiento:[
+        {id:uid('seg'),semana:'Semana 1',actividad:70,alimentacion:80,notas:'Buena adherencia inicial.'},
+        {id:uid('seg'),semana:'Semana 2',actividad:75,alimentacion:82,notas:'Mantiene rutina de yoga.'},
+        {id:uid('seg'),semana:'Semana 3',actividad:80,alimentacion:85,notas:'Incorporó pesas ligeras.'}
+      ]
+    },
+    medicionesAntropometricas:[
+      {id:uid('antro'),fecha:daysISOAgo(90),peso:64,talla:160,imc:25.0,abdominal:82,cintura:80,cadera:98,graso:'34%',muscular:'26%',observaciones:''},
+      {id:uid('antro'),fecha:daysISOAgo(20),peso:63.5,talla:160,imc:24.8,abdominal:81,cintura:79,cadera:98,graso:'33%',muscular:'27%',observaciones:'Leve mejoría en composición corporal.'}
+    ],
+    signosVitales:[
+      {id:uid('vit'),fecha:daysISOAgo(20),fc:'70',ta:'122/78',temp:'36.4',spo2:'99',observaciones:''}
+    ],
+    labs:[
+      {id:uid('lab'),nombre:'Calcio sérico',valor:'9.4',unidad:'mg/dL',rango:'8.6 - 10.2',fecha:daysISOAgo(90),tendencia:'estable',observaciones:''},
+      {id:uid('lab'),nombre:'Vitamina D (25-OH)',valor:'38',unidad:'ng/mL',rango:'30 - 100',fecha:daysISOAgo(90),tendencia:'estable',observaciones:'Dentro de rango.'}
+    ],
+    medicamentos:[],
+    suplementos:[
+      {id:uid('sup'),nombre:'Calcio + Vitamina D3',ingrediente:'Carbonato de calcio, colecalciferol',dosis:'600mg/400UI por día',motivo:'Prevención de progresión de osteopenia',fuente:'Indicado por especialista previo',estado:'activa',inicio:'2022-09-01',fin:'',observaciones:''}
+    ],
+    consultas:[
+      {id:uid('cons'),fecha:daysISOAgo(20),hora:'09:00',profesional:'Dra. Erika Abril',motivo:'Seguimiento de osteopenia y síntomas de menopausia',expectativas:'Fortalecer huesos de forma natural',objetivos:'Mejorar densidad ósea, manejar sofocos',prioridades:'Ejercicio de fuerza, calcio y vitamina D',inicio:'Diagnóstico hace 2 años',frecuencia:'Estable',desencadenantes:'N/A',alivian:'Yoga, ejercicio regular',notas:'Buena adherencia al plan previo. Sofocos leves, tolerables.',evaluacion:'Evolución favorable de osteopenia con buena adherencia a hábitos saludables.',plan:'Continuar suplementación, incorporar entrenamiento de fuerza 2x/semana.',estado:'finalizada',creadoEn:daysAgo(20),actualizadoEn:daysAgo(20)}
+    ],
+    resumen:{
+      situacion:'Paciente postmenopáusica en seguimiento por osteopenia, con muy buena adherencia a hábitos saludables y evolución favorable.',
+      objetivos:[{id:uid('tag'),texto:'Fortalecer densidad ósea'},{id:uid('tag'),texto:'Manejar síntomas vasomotores'}],
+      problemas:[{id:uid('prob'),nombre:'Osteopenia',estado:'En seguimiento',tone:'info'},{id:uid('prob'),nombre:'Sofocos menopáusicos',estado:'Leve',tone:'neutral'}],
+      pendientes:[{id:uid('pend'),texto:'Nueva densitometría ósea en 12 meses',fecha:daysISOAgo(-270)}]
+    },
+    timelineSeed:[
+      {ts:daysAgo(20),type:'consulta',title:'Consulta finalizada',desc:'Seguimiento de osteopenia'},
+      {ts:daysAgo(90),type:'lab',title:'Laboratorios añadidos',desc:'Calcio, vitamina D'},
+      {ts:daysAgo(700),type:'paciente',title:'Paciente creado',desc:'Marta Zuluaga Ortiz se añadió al sistema.'}
+    ]
+  });
+
+  patients.diego = mkPatientSeed({
+    id:'diego',
+    personal:{ nombre:'Diego', apellidos:'Salazar Home', fechaNacimiento:'2001-07-19', sexo:'Masculino', documento:'CC 1 122 334 556', telefono:'+57 320 111 0099', email:'diego.salazar@example.com', direccion:'Bucaramanga, Colombia', contactoEmergencia:'' },
+    antecedentes:[
+      {id:uid('ant'),categoria:'personales',status:STATUS.NOT_DOCUMENTED,descripcion:'',fecha:'',observaciones:''},
+      {id:uid('ant'),categoria:'familiares',status:STATUS.NOT_DOCUMENTED,descripcion:'',fecha:'',observaciones:''},
+      {id:uid('ant'),categoria:'quirurgicos',status:STATUS.ABSENT,descripcion:'',fecha:daysISOAgo(3),observaciones:'Niega cirugías previas.'},
+      {id:uid('ant'),categoria:'alergias',status:STATUS.ABSENT,descripcion:'',fecha:daysISOAgo(3),observaciones:'Niega alergias conocidas.'},
+      {id:uid('ant'),categoria:'reproductiva',status:STATUS.NOT_DOCUMENTED,descripcion:'',fecha:'',observaciones:''},
+      {id:uid('ant'),categoria:'nutricional',status:STATUS.NOT_DOCUMENTED,descripcion:'',fecha:'',observaciones:''}
+    ],
+    symptomStatus:{},
+    nutricion:{
+      patron:{comidas:STATUS_LABEL[STATUS.NOT_DOCUMENTED],horarios:'',regularidad:'',fuera:'',preparacion:''},
+      calidad:{fv:'',proteinas:'',cereales:'',grasas:'',fibra:'',ultraprocesados:'',azucares:'',bebidas:''},
+      conducta:{hambre:'',saciedad:'',velocidad:'',atencion:'',ansiedad:'',aburrimiento:'',antojos:'',nocturna:''},
+      diario:[]
+    },
+    habitos:{
+      actividad:{tipo:'',frecuencia:'',duracion:'',intensidad:'',pasos:'',sedentarismo:''},
+      sueno:{acostarse:'',levantarse:'',duracion:'',calidad:'',latencia:'',somnolencia:''},
+      estres:{nivel:'',fuentes:'',estrategias:''},
+      hidratacion:{cantidad:'',tipo:'',distribucion:''},
+      sustancias:{alcohol:'',tabaco:'',otras:'',pantallas:''},
+      objetivos:[],barreras:[],facilitadores:[],seguimiento:[]
+    },
+    medicionesAntropometricas:[],
+    signosVitales:[],
+    labs:[],
+    medicamentos:[],
+    suplementos:[],
+    consultas:[
+      {id:uid('cons'),fecha:daysISOAgo(3),hora:'11:00',profesional:'Dra. Erika Abril',motivo:'Primera consulta, chequeo general',expectativas:'',objetivos:'',prioridades:'',inicio:'',frecuencia:'',desencadenantes:'',alivian:'',notas:'Paciente nuevo, sin historia previa registrada. Consulta inicial agendada; queda pendiente completar historia clínica completa.',evaluacion:'',plan:'',estado:'borrador',creadoEn:daysAgo(3),actualizadoEn:daysAgo(3)}
+    ],
+    resumen:{
+      situacion:'',
+      objetivos:[],
+      problemas:[],
+      pendientes:[{id:uid('pend'),texto:'Completar historia clínica inicial completa',fecha:todayISO()}]
+    },
+    timelineSeed:[
+      {ts:daysAgo(3),type:'consulta',title:'Consulta iniciada (borrador)',desc:'Primera consulta, chequeo general'},
+      {ts:daysAgo(3),type:'paciente',title:'Paciente creado',desc:'Diego Salazar Home se añadió al sistema.'}
+    ]
+  });
+
+  return patients;
+}
+
+/* ================= estado global y arranque ================= */
+var STATE = { patients:{}, order:[], currentPatientId:null };
+
+function defaultOrder(){ return ['camila','julian','marta','diego']; }
+
+async function loadState(){
+  var saved = await Repo.loadAll();
+  if(saved && saved.patients && saved.order && saved.order.length){
+    STATE.patients = saved.patients;
+    STATE.order = saved.order;
+    backfillSchema();
+  } else {
+    STATE.patients = seedPatients();
+    STATE.order = defaultOrder();
+    persist();
+  }
+}
+// Si un paciente fue guardado por una versión anterior del modelo de datos,
+// completamos campos nuevos con valores por defecto para no romper el render.
+function backfillSchema(){
+  STATE.order.forEach(function(id){
+    var p = STATE.patients[id];
+    if(!p) return;
+    if(!p.personal) p.personal = emptyPersonal();
+    if(!p.antecedentes) p.antecedentes = [];
+    if(!p.symptoms) p.symptoms = clone(SYMPTOM_TEMPLATE);
+    if(!p.nutricion) p.nutricion = { patron:{}, calidad:{}, conducta:{}, diario:[] };
+    if(!p.nutricion.diario) p.nutricion.diario = [];
+    if(!p.habitos) p.habitos = { actividad:{}, sueno:{}, estres:{}, hidratacion:{}, sustancias:{}, objetivos:[], barreras:[], facilitadores:[], seguimiento:[] };
+    ['objetivos','barreras','facilitadores','seguimiento'].forEach(function(k){ if(!p.habitos[k]) p.habitos[k]=[]; });
+    if(!p.medicionesAntropometricas) p.medicionesAntropometricas = [];
+    if(!p.signosVitales) p.signosVitales = [];
+    if(!p.labs) p.labs = [];
+    if(!p.medicamentos) p.medicamentos = [];
+    if(!p.suplementos) p.suplementos = [];
+    if(!p.consultas) p.consultas = [];
+    if(!p.resumen) p.resumen = { situacion:'', objetivos:[], problemas:[], pendientes:[] };
+    if(!p.timeline) p.timeline = [];
+  });
+}
+function resetDemoData(){
+  STATE.patients = seedPatients();
+  STATE.order = defaultOrder();
+  STATE.currentPatientId = STATE.order[0];
+  persist();
+}
+
+/* ================= utilidades de estado/documentación ================= */
+function isBlank(v){ return v===undefined || v===null || String(v).trim()===''; }
+function docText(v, fallback){
+  fallback = fallback || 'Por documentar';
+  return isBlank(v) ? '<span class="empty-note">'+esc(fallback)+'</span>' : esc(v);
+}
+function docPlain(v, fallback){
+  fallback = fallback || 'Por documentar';
+  return isBlank(v) ? fallback : String(v);
+}
+function isDocumented(val){
+  if(isBlank(val)) return false;
+  return !/por documentar|no document|sin document|por definir|sin registrar|no registrad|sin evaluar|sin dato/i.test(String(val));
+}
+function slugName(p){ return fullName(p); }
+function initialsOf(p){
+  var n = (p.personal.nombre||'').trim(), a=(p.personal.apellidos||'').trim();
+  var i1 = n ? n[0] : (a? a[0] : '?');
+  var i2 = a ? a[0] : (n.length>1? n[1] : '');
+  return (i1+i2).toUpperCase();
+}
+
+/* ================= dashboard derivado (punto 12: sin datos "sueltos") ================= */
+function computeDashboard(){
+  var patients = STATE.order.map(function(id){ return STATE.patients[id]; }).filter(Boolean);
+  var totalConsultas = 0, borradores = [], cambiosSemana = 0, allEvents = [], pendientesGlobal = [];
+  var weekAgo = Date.now() - 7*86400000;
+  patients.forEach(function(p){
+    totalConsultas += p.consultas.length;
+    p.consultas.forEach(function(c){ if(c.estado==='borrador') borradores.push({patient:p, consulta:c}); });
+    (p.timeline||[]).forEach(function(t){
+      if(t.ts >= weekAgo) cambiosSemana++;
+      allEvents.push({patient:p, ev:t});
+    });
+    (p.resumen.pendientes||[]).forEach(function(pend){ pendientesGlobal.push({patient:p, pend:pend}); });
+  });
+  allEvents.sort(function(a,b){ return b.ev.ts - a.ev.ts; });
+  pendientesGlobal.sort(function(a,b){ return (a.pend.fecha||'') < (b.pend.fecha||'') ? -1 : 1; });
+  return {
+    stats:{ pacientes: patients.length, consultas: totalConsultas, borradores: borradores.length, cambiosSemana: cambiosSemana },
+    borradores: borradores,
+    recientes: allEvents.slice(0,8),
+    pendientes: pendientesGlobal.slice(0,8)
+  };
+}
+
+/* ================= sidebar / dashboard ================= */
+function renderSidebarRecent(){
+  var box = document.getElementById('sidebar-recent');
+  box.innerHTML='';
+  STATE.order.slice(0,6).forEach(function(id){
+    var p = STATE.patients[id];
+    if(!p) return;
+    var btn = el('button','nav-item', esc(fullName(p)));
+    btn.style.fontSize='12.5px';
+    btn.addEventListener('click', function(){ selectPatient(id); });
+    box.appendChild(btn);
+  });
+}
+
+function statCard(n,l){ return '<div class="stat-card"><div class="n num">'+n+'</div><div class="l">'+esc(l)+'</div></div>'; }
+
+function renderDashboard(){
+  var d = computeDashboard();
+  var now = new Date();
+  var hour = now.getHours();
+  var saludo = hour < 12 ? 'Buenos días' : (hour < 19 ? 'Buenas tardes' : 'Buenas noches');
+  document.getElementById('dash-greeting').textContent = saludo+', Dra. Abril';
+  document.getElementById('dash-sub').textContent = DIAS[now.getDay()].replace(/^./,function(c){return c.toUpperCase();})+' '+fmtDate(now);
+
+  document.getElementById('dash-stats').innerHTML =
+    statCard(d.stats.pacientes,'Pacientes activos') +
+    statCard(d.stats.consultas,'Consultas registradas') +
+    statCard(d.stats.borradores,'Consultas en borrador') +
+    statCard(d.stats.cambiosSemana,'Cambios esta semana');
+
+  var panels = document.getElementById('dash-panels');
+  panels.innerHTML='';
+
+  var p1 = el('div','panel');
+  p1.innerHTML = '<div class="panel-head"><h3>Consultas en borrador</h3><span class="count-pill">'+d.borradores.length+'</span></div><div class="row-list" id="dash-borradores"></div>';
+  panels.appendChild(p1);
+  var rlB = p1.querySelector('#dash-borradores');
+  if(!d.borradores.length){ rlB.innerHTML = '<div class="row-empty">No hay consultas sin finalizar.</div>'; }
+  d.borradores.forEach(function(item){
+    var row = el('button','row-item linklike');
+    row.style.width='100%'; row.style.background='none'; row.style.border='none'; row.style.cursor='pointer';
+    row.innerHTML = '<div><div class="primary">'+esc(fullName(item.patient))+'</div><div class="secondary">'+esc(docPlain(item.consulta.motivo,'Motivo sin registrar'))+'</div></div><div class="right pill pill-neutral">Borrador</div>';
+    row.addEventListener('click', function(){ selectPatient(item.patient.id); goToTab('consulta'); });
+    rlB.appendChild(row);
+  });
+
+  var p2 = el('div','panel');
+  p2.innerHTML = '<div class="panel-head"><h3>Pendientes de seguimiento</h3><span class="count-pill">'+d.pendientes.length+'</span></div><div class="row-list" id="dash-pendientes"></div>';
+  panels.appendChild(p2);
+  var rlP = p2.querySelector('#dash-pendientes');
+  if(!d.pendientes.length){ rlP.innerHTML = '<div class="row-empty">No hay pendientes registrados.</div>'; }
+  d.pendientes.forEach(function(item){
+    var row = el('button','row-item linklike');
+    row.style.width='100%'; row.style.background='none'; row.style.border='none'; row.style.cursor='pointer';
+    row.innerHTML = '<div><div class="primary">'+esc(fullName(item.patient))+'</div><div class="secondary">'+esc(item.pend.texto)+'</div></div><div class="right secondary">'+(item.pend.fecha?esc(isoToLabel(item.pend.fecha)):'')+'</div>';
+    row.addEventListener('click', function(){ selectPatient(item.patient.id); goToTab('resumen'); });
+    rlP.appendChild(row);
+  });
+
+  var p3 = el('div','panel');
+  p3.style.gridColumn = '1 / -1';
+  p3.innerHTML = '<div class="panel-head"><h3>Actividad reciente</h3></div><div class="row-list" id="dash-recientes"></div>';
+  panels.appendChild(p3);
+  var rlR = p3.querySelector('#dash-recientes');
+  if(!d.recientes.length){ rlR.innerHTML = '<div class="row-empty">Todavía no hay actividad registrada.</div>'; }
+  d.recientes.forEach(function(item){
+    var row = el('button','row-item linklike');
+    row.style.width='100%'; row.style.background='none'; row.style.border='none'; row.style.cursor='pointer';
+    row.innerHTML = '<div><div class="primary">'+esc(item.ev.title)+' · '+esc(fullName(item.patient))+'</div><div class="secondary">'+esc(item.ev.desc||'')+'</div></div><div class="right secondary">'+esc(timeAgo(item.ev.ts))+'</div>';
+    row.addEventListener('click', function(){ selectPatient(item.patient.id); });
+    rlR.appendChild(row);
+  });
+}
+
+/* ================= cabecera de paciente ================= */
+function renderPatientHeader(p){
+  document.getElementById('ph-avatar').textContent = initialsOf(p);
+  document.getElementById('ph-name').textContent = fullName(p);
+  var age = ageFromDob(p.personal.fechaNacimiento);
+  var metaParts = [];
+  if(age!=null) metaParts.push(age+' años');
+  if(p.personal.sexo) metaParts.push(p.personal.sexo);
+  if(p.personal.direccion) metaParts.push(p.personal.direccion);
+  document.getElementById('ph-meta').textContent = metaParts.length ? metaParts.join(' · ') : 'Datos personales por documentar';
+
+  var medsActivos = p.medicamentos.filter(function(m){ return m.estado==='activa'; });
+  var suppsActivos = p.suplementos.filter(function(s){ return s.estado==='activa'; });
+  var problemasActivos = (p.resumen.problemas||[]);
+  var alergiaAnt = p.antecedentes.find(function(a){ return a.categoria==='alergias' && a.status===STATUS.PRESENT; });
+
+  var facts = document.getElementById('ph-facts');
+  facts.innerHTML='';
+  function fact(k,v,alert){
+    var d = el('div','fact'+(alert?' alert':''));
+    d.innerHTML = '<span class="k">'+esc(k)+'</span><span class="v">'+esc(v)+'</span>';
+    facts.appendChild(d);
+  }
+  fact('Medicación activa', medsActivos.length ? medsActivos.map(function(m){return m.nombre;}).join(', ') : 'Ninguna registrada');
+  fact('Suplementos', suppsActivos.length ? suppsActivos.map(function(s){return s.nombre;}).join(', ') : 'Ninguno registrado');
+  fact('Problemas activos', problemasActivos.length ? problemasActivos.map(function(x){return x.nombre;}).join(', ') : 'Sin registrar');
+  fact('Alergias', alergiaAnt ? alergiaAnt.descripcion : 'Sin registrar', !!alergiaAnt);
+}
+
+/* ================= perfil funcional (resumen visual derivado, sin scores arbitrarios) ================= */
+function renderFuncProfile(p){
+  var box = document.getElementById('func-profile');
+  var antDoc = p.antecedentes.filter(function(a){ return a.status!==STATUS.NOT_DOCUMENTED; }).length;
+  var antPct = p.antecedentes.length ? Math.round(antDoc/p.antecedentes.length*100) : 0;
+  var latestAntro = getLatestAntro(p);
+  var sueno = p.habitos.sueno.calidad;
+  var estres = p.habitos.estres.nivel;
+  var symDoc = p.symptoms.filter(function(s){ return s.status!==STATUS.NOT_EVALUATED; }).length;
+  var symPct = p.symptoms.length ? Math.round(symDoc/p.symptoms.length*100) : 0;
+
+  var cards = [
+    {label:'Antecedentes documentados', value: antPct+'% ('+antDoc+'/'+p.antecedentes.length+')', pct:antPct},
+    {label:'Revisión por sistemas', value: symPct+'% evaluado', pct:symPct},
+    {label:'IMC más reciente', value: latestAntro && latestAntro.imc ? latestAntro.imc+' ('+isoToLabel(latestAntro.fecha)+')' : 'Sin mediciones', pct: latestAntro && latestAntro.imc ? Math.min(100, Math.round(latestAntro.imc/35*100)) : 0},
+    {label:'Calidad de sueño', value: isDocumented(sueno) ? sueno : 'Por documentar', pct: isDocumented(sueno)?60:0},
+    {label:'Nivel de estrés', value: isDocumented(estres) ? estres : 'Por documentar', pct: isDocumented(estres)?60:0}
+  ];
+  box.innerHTML = cards.map(function(c){
+    var bars=5, on=Math.round(c.pct/100*bars);
+    var gauge='';
+    for(var i=0;i<bars;i++){ gauge += '<i style="background:'+(i<on?'var(--accent)':'var(--surface-2)')+'"></i>'; }
+    return '<div class="func-card"><div class="fc-label">'+esc(c.label)+'</div><div class="fc-value">'+esc(c.value)+'</div><div class="gauge">'+gauge+'</div></div>';
+  }).join('');
+}
+
+/* ================= revisión por sistemas ================= */
+function renderSymptoms(p){
+  var box = document.getElementById('symptom-grid');
+  box.innerHTML='';
+  SYMPTOM_CATS.forEach(function(cat){
+    var items = p.symptoms.filter(function(s){ return s.categoria===cat.k; });
+    var div = el('div','symptom-cat');
+    var list = items.map(function(s){
+      return '<button class="symptom-line" data-sid="'+s.id+'"><span><span class="dot '+s.status+'"></span>'+esc(s.nombre)+'</span><span class="secondary" style="color:var(--text-faint);">'+esc(STATUS_LABEL[s.status])+'</span></button>';
+    }).join('');
+    div.innerHTML = '<h5>'+esc(cat.label)+'</h5><div class="symptom-list">'+list+'</div>';
+    box.appendChild(div);
+  });
+  box.querySelectorAll('.symptom-line').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      cycleSymptomStatus(p, btn.getAttribute('data-sid'));
+      renderSymptoms(p);
+      renderFuncProfile(p);
+      showToast('Síntoma actualizado');
+    });
+  });
+}
+
+/* ================= resumen (situación, objetivos, problemas, pendientes) ================= */
+function tonePill(tone,text){
+  var cls = {good:'pill-good',warn:'pill-warn',bad:'pill-bad',info:'pill-info',neutral:'pill-neutral'}[tone] || 'pill-neutral';
+  return '<span class="pill '+cls+'">'+esc(text)+'</span>';
+}
+function renderResumen(p){
+  var box = document.getElementById('ptab-resumen');
+  var r = p.resumen;
+  var objetivosChips = (r.objetivos||[]).map(function(o){ return '<span class="chip">'+esc(o.texto)+'</span>'; }).join('') || '<span class="empty-note">Sin objetivos registrados.</span>';
+  var problemasRows = (r.problemas||[]).length ? r.problemas.map(function(pr){ return '<div class="kv"><span class="k">'+esc(pr.nombre)+'</span><span class="v">'+tonePill(pr.tone,pr.estado)+'</span></div>'; }).join('') : '<div class="empty-note">Sin problemas activos registrados.</div>';
+  var pendientesRows = (r.pendientes||[]).length ? r.pendientes.map(function(pe){ return '<div class="kv"><span class="k">'+esc(pe.texto)+'</span><span class="v">'+(pe.fecha?esc(isoToLabel(pe.fecha)):'—')+'</span></div>'; }).join('') : '<div class="empty-note">Sin pendientes registrados.</div>';
+
+  box.innerHTML =
+    '<div class="section-title"><h3>Situación general</h3><button class="btn btn-sm" id="btn-edit-resumen">Editar resumen</button></div>' +
+    '<div class="card free-text">'+ (isBlank(r.situacion) ? '<span class="empty-note">Por documentar. Use "Editar resumen" para registrar la situación general del paciente.</span>' : '<p>'+esc(r.situacion)+'</p>') +'</div>' +
+    '<div class="section-title"><h3>Objetivos</h3></div>' +
+    '<div class="card chip-row">'+objetivosChips+'</div>' +
+    '<div class="card-grid" style="margin-top:14px;">' +
+      '<div class="card"><h4>Problemas activos</h4>'+problemasRows+'</div>' +
+      '<div class="card"><h4>Pendientes</h4>'+pendientesRows+'</div>' +
+    '</div>';
+  document.getElementById('btn-edit-resumen').addEventListener('click', function(){ openResumenModal(p); });
+}
+
+/* ================= antecedentes ================= */
+function renderAntecedentes(p){
+  var box = document.getElementById('antecedentes-grid');
+  box.innerHTML='';
+  ANTECEDENTE_CATEGORIAS.forEach(function(catDef){
+    var recs = p.antecedentes.filter(function(a){ return a.categoria===catDef.k; });
+    var card = el('div','card');
+    var body = '';
+    if(!recs.length){
+      body = '<div class="cta-empty"><span>Sin registrar.</span><button class="btn btn-sm add-ant" data-cat="'+catDef.k+'">＋ Documentar</button></div>';
+    } else {
+      body = recs.map(function(r){
+        return '<div class="kv" style="align-items:flex-start;"><span class="k">'+tonePill(STATUS_TONE[r.status], STATUS_LABEL[r.status])+(r.descripcion?(' <span style="margin-left:6px;">'+esc(r.descripcion)+'</span>'):'')+'</span>' +
+          '<span class="v row-actions"><button class="icon-btn edit-ant" data-id="'+r.id+'" title="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>' +
+          '<button class="icon-btn danger remove-ant" data-id="'+r.id+'" title="Eliminar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button></span></div>';
+      }).join('') + '<div style="margin-top:8px;"><button class="btn btn-sm add-ant" data-cat="'+catDef.k+'">＋ Añadir otro registro</button></div>';
+    }
+    card.innerHTML = '<div class="card-head"><h4>'+esc(catDef.label)+'</h4></div>'+body;
+    box.appendChild(card);
+  });
+  box.querySelectorAll('.add-ant').forEach(function(btn){
+    btn.addEventListener('click', function(){ openAntecedenteModal(p, btn.getAttribute('data-cat'), null); });
+  });
+  box.querySelectorAll('.edit-ant').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var rec = p.antecedentes.find(function(a){ return a.id===btn.getAttribute('data-id'); });
+      openAntecedenteModal(p, rec.categoria, rec);
+    });
+  });
+  box.querySelectorAll('.remove-ant').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      if(!confirm('¿Eliminar este registro de antecedente? Esta acción no se puede deshacer.')) return;
+      AntecedenteService.remove(p, btn.getAttribute('data-id'));
+      renderAntecedentes(p); renderFuncProfile(p);
+      showToast('Antecedente eliminado');
+    });
+  });
+}
+
+/* ================= nutrición ================= */
+var NUTRI_PATRON_FIELDS = [['comidas','N.º de comidas al día'],['horarios','Horarios habituales'],['regularidad','Regularidad'],['fuera','Comidas fuera de casa'],['preparacion','Quién prepara la comida']];
+var NUTRI_CALIDAD_FIELDS = [['fv','Frutas y verduras'],['proteinas','Proteínas'],['cereales','Cereales'],['grasas','Calidad de grasas'],['fibra','Fibra'],['ultraprocesados','Ultraprocesados'],['azucares','Azúcares añadidos'],['bebidas','Bebidas habituales']];
+var NUTRI_CONDUCTA_FIELDS = [['hambre','Reconocimiento de hambre'],['saciedad','Reconocimiento de saciedad'],['velocidad','Velocidad al comer'],['atencion','Atención al comer'],['ansiedad','Comer por ansiedad'],['aburrimiento','Comer por aburrimiento'],['antojos','Antojos frecuentes'],['nocturna','Ingesta nocturna']];
+
+function kvSection(fields, data){
+  return fields.map(function(f){
+    var v = data[f[0]];
+    return '<div class="kv"><span class="k">'+esc(f[1])+'</span><span class="v">'+docText(v)+'</span></div>';
+  }).join('');
+}
+
+function renderNutriPatron(p){
+  var box = document.getElementById('nsub-patron');
+  box.innerHTML = '<div class="card-head"><h4>Patrón alimentario</h4><button class="btn btn-sm" id="btn-edit-nutri-patron">Editar</button></div><div class="card">'+kvSection(NUTRI_PATRON_FIELDS, p.nutricion.patron)+'</div>';
+  document.getElementById('btn-edit-nutri-patron').addEventListener('click', function(){ openNutriModal(p,'patron',NUTRI_PATRON_FIELDS); });
+}
+function renderNutriCalidad(p){
+  var box = document.getElementById('nsub-calidad');
+  box.innerHTML = '<div class="card-head"><h4>Calidad y composición</h4><button class="btn btn-sm" id="btn-edit-nutri-calidad">Editar</button></div><div class="card">'+kvSection(NUTRI_CALIDAD_FIELDS, p.nutricion.calidad)+'</div>';
+  document.getElementById('btn-edit-nutri-calidad').addEventListener('click', function(){ openNutriModal(p,'calidad',NUTRI_CALIDAD_FIELDS); });
+}
+function renderNutriConducta(p){
+  var box = document.getElementById('nsub-conducta');
+  box.innerHTML = '<div class="card-head"><h4>Conducta alimentaria <span class="field-hint">(sin enfoque estigmatizante)</span></h4><button class="btn btn-sm" id="btn-edit-nutri-conducta">Editar</button></div><div class="card">'+kvSection(NUTRI_CONDUCTA_FIELDS, p.nutricion.conducta)+'</div>';
+  document.getElementById('btn-edit-nutri-conducta').addEventListener('click', function(){ openNutriModal(p,'conducta',NUTRI_CONDUCTA_FIELDS); });
+}
+function renderFoodDiary(p){
+  var tbody = document.getElementById('food-diary-body');
+  var diario = p.nutricion.diario;
+  if(!diario.length){ tbody.innerHTML = '<tr><td colspan="7" class="empty-note">Aún no hay registros en el diario alimentario.</td></tr>'; return; }
+  tbody.innerHTML = diario.map(function(r){
+    return '<tr><td>'+esc(isoToLabel(r.fecha))+'</td><td>'+esc(r.hora)+'</td><td>'+esc(r.comida)+'</td><td>'+esc(r.alimentos)+'</td><td>'+esc(r.hambre)+' → '+esc(r.saciedad)+'</td><td>'+esc(r.contexto)+'</td>' +
+      '<td class="row-actions"><button class="icon-btn danger del-diario" data-id="'+r.id+'" title="Eliminar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button></td></tr>';
+  }).join('');
+  tbody.querySelectorAll('.del-diario').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      if(!confirm('¿Eliminar este registro del diario alimentario?')) return;
+      NutricionService.removeDiario(p, btn.getAttribute('data-id'));
+      renderFoodDiary(p);
+      showToast('Registro eliminado');
+    });
+  });
+}
+function renderNutricion(p){
+  renderNutriPatron(p); renderNutriCalidad(p); renderFoodDiary(p); renderNutriConducta(p);
+}
+
+/* ================= hábitos ================= */
+var HABIT_FIELDS = {
+  actividad: [['tipo','Tipo de actividad'],['frecuencia','Frecuencia'],['duracion','Duración'],['intensidad','Intensidad'],['pasos','Pasos diarios aprox.'],['sedentarismo','Tiempo sedentario']],
+  sueno: [['acostarse','Hora de acostarse'],['levantarse','Hora de levantarse'],['duracion','Duración total'],['calidad','Calidad percibida'],['latencia','Latencia para dormir'],['somnolencia','Somnolencia diurna']],
+  estres: [['nivel','Nivel percibido'],['fuentes','Fuentes principales'],['estrategias','Estrategias de manejo']],
+  hidratacion: [['cantidad','Cantidad diaria'],['tipo','Tipo de líquidos'],['distribucion','Distribución en el día']],
+  sustancias: [['alcohol','Alcohol'],['tabaco','Tabaco'],['otras','Otras sustancias'],['pantallas','Uso de pantallas antes de dormir']]
+};
+function renderHabitDomain(p, domain){
+  var box = document.getElementById('hsub-'+domain);
+  box.innerHTML = '<div class="card-head"><h4>'+esc(HABITO_DOMAIN_LABEL[domain])+'</h4><button class="btn btn-sm edit-habit-domain" data-domain="'+domain+'">Editar</button></div><div class="card">'+kvSection(HABIT_FIELDS[domain], p.habitos[domain])+'</div>';
+  box.querySelector('.edit-habit-domain').addEventListener('click', function(){ openHabitoModal(p, domain); });
+}
+function tagEditorHtml(list, listKey){
+  var chips = (list||[]).map(function(t){ return '<span class="chip" data-tagid="'+t.id+'">'+esc(t.texto)+' <button class="rm-tag" data-list="'+listKey+'" data-id="'+t.id+'">×</button></span>'; }).join('');
+  return '<div class="tag-editor" data-list="'+listKey+'">'+chips+'<input type="text" placeholder="Escribir y presionar Enter…" data-addto="'+listKey+'"></div>';
+}
+function renderSeguimiento(p){
+  var box = document.getElementById('hsub-seguimiento');
+  var weeks = p.habitos.seguimiento;
+  var maxW = 260;
+  var chart = weeks.length ? '<div class="habit-week-grid">'+weeks.map(function(w){
+    var hAct = Math.max(6, Math.round(w.actividad/100*maxW/4));
+    var hAli = Math.max(6, Math.round(w.alimentacion/100*maxW/4));
+    return '<div class="hw-col"><div class="hw-bar-track"><div class="hw-bar" style="height:'+hAct+'px; background:var(--accent);"></div></div><div class="hw-label">'+esc(w.semana)+'</div><div class="hw-val">Act '+w.actividad+'%</div></div>';
+  }).join('') + '</div>' : '<div class="empty-note">Aún no hay semanas de seguimiento registradas.</div>';
+
+  box.innerHTML =
+    '<div class="card-head"><h4>Objetivos de la semana</h4></div>' +
+    '<div class="card" style="margin-bottom:14px;">'+tagEditorHtml(p.habitos.objetivos,'objetivos')+'</div>' +
+    '<div class="card-grid" style="margin-bottom:14px;">' +
+      '<div class="card"><h4>Barreras</h4>'+tagEditorHtml(p.habitos.barreras,'barreras')+'</div>' +
+      '<div class="card"><h4>Facilitadores</h4>'+tagEditorHtml(p.habitos.facilitadores,'facilitadores')+'</div>' +
+    '</div>' +
+    '<div class="card-head"><h4>Seguimiento semanal <span class="field-hint">(sin colores de "éxito/fracaso" automático)</span></h4><button class="btn btn-sm" id="btn-add-seguimiento">＋ Añadir semana</button></div>' +
+    '<div class="card">'+chart+'</div>';
+
+  document.getElementById('btn-add-seguimiento').addEventListener('click', function(){ openSeguimientoModal(p); });
+  box.querySelectorAll('.rm-tag').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      HabitoService.removeTag(p, btn.getAttribute('data-list'), btn.getAttribute('data-id'));
+      renderSeguimiento(p);
+      showToast('Elemento eliminado');
+    });
+  });
+  box.querySelectorAll('[data-addto]').forEach(function(input){
+    input.addEventListener('keydown', function(e){
+      if(e.key==='Enter'){
+        e.preventDefault();
+        HabitoService.addTag(p, input.getAttribute('data-addto'), input.value);
+        renderSeguimiento(p);
+        showToast('Añadido');
+      }
+    });
+  });
+}
+function renderHabitos(p){
+  ['actividad','sueno','estres','hidratacion','sustancias'].forEach(function(d){ renderHabitDomain(p,d); });
+  renderSeguimiento(p);
+}
+
+/* ================= antropometría y signos vitales ================= */
+function renderAntropometria(p){
+  var box = document.getElementById('ptab-antropometria');
+  var hist = p.medicionesAntropometricas;
+  var latest = getLatestAntro(p);
+  var vitalsHist = p.signosVitales;
+  var latestV = getLatestVitals(p);
+
+  var summary = latest ? (
+    '<div class="card-grid">' +
+    '<div class="card"><h4>Última medición ('+esc(isoToLabel(latest.fecha))+')</h4>' +
+    '<div class="kv"><span class="k">Peso</span><span class="v">'+(latest.peso!=null?latest.peso+' kg':'—')+'</span></div>' +
+    '<div class="kv"><span class="k">Talla</span><span class="v">'+(latest.talla!=null?latest.talla+' cm':'—')+'</span></div>' +
+    '<div class="kv"><span class="k">IMC (calculado)</span><span class="v">'+(latest.imc!=null?latest.imc:'—')+'</span></div>' +
+    '<div class="kv"><span class="k">Circunf. abdominal</span><span class="v">'+docText(latest.abdominal)+'</span></div>' +
+    '<div class="kv"><span class="k">Cintura / cadera</span><span class="v">'+docText(latest.cintura)+' / '+docText(latest.cadera)+'</span></div>' +
+    '<div class="kv"><span class="k">% graso / % muscular</span><span class="v">'+docText(latest.graso)+' / '+docText(latest.muscular)+'</span></div>' +
+    (latest.observaciones ? '<div class="kv"><span class="k">Observaciones</span><span class="v">'+esc(latest.observaciones)+'</span></div>' : '') +
+    '</div>' +
+    '<div class="card"><h4>Signos vitales más recientes'+(latestV?(' ('+esc(isoToLabel(latestV.fecha))+')'):'')+'</h4>' +
+    (latestV ? (
+      '<div class="kv"><span class="k">Frecuencia cardíaca</span><span class="v">'+docText(latestV.fc)+'</span></div>' +
+      '<div class="kv"><span class="k">Tensión arterial</span><span class="v">'+docText(latestV.ta)+'</span></div>' +
+      '<div class="kv"><span class="k">Temperatura</span><span class="v">'+docText(latestV.temp)+'</span></div>' +
+      '<div class="kv"><span class="k">Saturación O2</span><span class="v">'+docText(latestV.spo2)+'</span></div>'
+    ) : '<div class="cta-empty"><span>Sin signos vitales registrados.</span></div>') +
+    '</div></div>'
+  ) : '<div class="cta-empty"><span>Sin mediciones antropométricas registradas.</span></div>';
+
+  var histRows = hist.length ? hist.slice().reverse().map(function(m){
+    return '<tr><td>'+esc(isoToLabel(m.fecha))+'</td><td>'+(m.peso!=null?m.peso:'—')+'</td><td>'+(m.talla!=null?m.talla:'—')+'</td><td>'+(m.imc!=null?m.imc:'—')+'</td><td>'+docText(m.abdominal)+'</td>' +
+      '<td class="row-actions"><button class="icon-btn danger del-antro" data-id="'+m.id+'" title="Eliminar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button></td></tr>';
+  }).join('') : '<tr><td colspan="6" class="empty-note">Sin histórico.</td></tr>';
+
+  var vitalsRows = vitalsHist.length ? vitalsHist.slice().reverse().map(function(v){
+    return '<tr><td>'+esc(isoToLabel(v.fecha))+'</td><td>'+docText(v.fc)+'</td><td>'+docText(v.ta)+'</td><td>'+docText(v.temp)+'</td><td>'+docText(v.spo2)+'</td>' +
+      '<td class="row-actions"><button class="icon-btn danger del-vital" data-id="'+v.id+'" title="Eliminar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button></td></tr>';
+  }).join('') : '<tr><td colspan="6" class="empty-note">Sin histórico.</td></tr>';
+
+  box.innerHTML =
+    '<div class="section-title" style="margin-top:0;"><h3>Antropometría y signos vitales</h3><div style="display:flex; gap:8px;"><button class="btn btn-sm" id="btn-add-antro">＋ Añadir medición</button><button class="btn btn-sm" id="btn-add-vitals">＋ Añadir signos vitales</button></div></div>' +
+    summary +
+    '<div class="section-title"><h3 style="font-size:14px;">Histórico de mediciones</h3></div>' +
+    '<div class="table-wrap"><table class="mini-table"><thead><tr><th>Fecha</th><th>Peso</th><th>Talla</th><th>IMC</th><th>Abdominal</th><th></th></tr></thead><tbody>'+histRows+'</tbody></table></div>' +
+    '<div class="section-title"><h3 style="font-size:14px;">Histórico de signos vitales</h3></div>' +
+    '<div class="table-wrap"><table class="mini-table"><thead><tr><th>Fecha</th><th>FC</th><th>TA</th><th>Temp.</th><th>SpO2</th><th></th></tr></thead><tbody>'+vitalsRows+'</tbody></table></div>';
+
+  document.getElementById('btn-add-antro').addEventListener('click', function(){ openAntroModal(p); });
+  document.getElementById('btn-add-vitals').addEventListener('click', function(){ openVitalsModal(p); });
+  box.querySelectorAll('.del-antro').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      if(!confirm('¿Eliminar esta medición del histórico?')) return;
+      AntropometriaService.removeMedicion(p, btn.getAttribute('data-id'));
+      renderAntropometria(p); renderFuncProfile(p);
+      showToast('Medición eliminada');
+    });
+  });
+  box.querySelectorAll('.del-vital').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      if(!confirm('¿Eliminar este registro de signos vitales?')) return;
+      VitalsService.removeRegistro(p, btn.getAttribute('data-id'));
+      renderAntropometria(p);
+      showToast('Registro eliminado');
+    });
+  });
+}
+
+/* ================= laboratorios ================= */
+var TREND_CLASS = { subiendo:'pill-warn', bajando:'pill-info', estable:'pill-good' };
+function renderLabs(p){
+  var tbody = document.getElementById('labs-body');
+  if(!p.labs.length){ tbody.innerHTML = '<tr><td colspan="7" class="empty-note">Sin pruebas de laboratorio registradas. Use "＋ Agregar prueba personalizada".</td></tr>'; return; }
+  tbody.innerHTML = p.labs.map(function(l){
+    return '<tr><td>'+esc(l.nombre)+'</td><td>'+esc(l.valor)+'</td><td>'+esc(isoToLabel(l.fecha))+'</td><td>'+esc(l.unidad)+'</td><td>'+esc(l.rango)+'</td>' +
+      '<td>'+tonePill(l.tendencia==='subiendo'?'warn':(l.tendencia==='bajando'?'info':'good'), l.tendencia)+'</td>' +
+      '<td class="row-actions"><button class="icon-btn edit-lab" data-id="'+l.id+'" title="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>' +
+      '<button class="icon-btn danger del-lab" data-id="'+l.id+'" title="Eliminar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button></td></tr>';
+  }).join('');
+  tbody.querySelectorAll('.edit-lab').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var rec = p.labs.find(function(l){ return l.id===btn.getAttribute('data-id'); });
+      openLabModal(p, rec);
+    });
+  });
+  tbody.querySelectorAll('.del-lab').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      if(!confirm('¿Eliminar esta prueba de laboratorio?')) return;
+      LabService.remove(p, btn.getAttribute('data-id'));
+      renderLabs(p);
+      showToast('Prueba eliminada');
+    });
+  });
+}
+
+/* ================= medicación y suplementos ================= */
+function renderMeds(p){
+  var tbody = document.getElementById('meds-body');
+  if(!p.medicamentos.length){ tbody.innerHTML = '<tr><td colspan="9" class="empty-note">Sin medicamentos registrados.</td></tr>'; return; }
+  tbody.innerHTML = p.medicamentos.map(function(m){
+    return '<tr><td>'+esc(m.nombre)+'</td><td>'+esc(m.dosis)+'</td><td>'+esc(m.frecuencia)+'</td><td>'+esc(m.via)+'</td><td>'+esc(isoToLabel(m.inicio))+'</td><td>'+(m.fin?esc(isoToLabel(m.fin)):'—')+'</td><td>'+esc(m.motivo)+'</td>' +
+      '<td>'+tonePill(m.estado==='activa'?'good':'neutral', m.estado==='activa'?'Activa':'Inactiva')+'</td>' +
+      '<td class="row-actions"><button class="icon-btn edit-med" data-kind="med" data-id="'+m.id+'" title="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>' +
+      '<button class="icon-btn toggle-med" data-kind="med" data-id="'+m.id+'" title="'+(m.estado==='activa'?'Desactivar':'Reactivar')+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></td></tr>';
+  }).join('');
+  wireMedRows(p, tbody);
+}
+function renderSupps(p){
+  var tbody = document.getElementById('supps-body');
+  if(!p.suplementos.length){ tbody.innerHTML = '<tr><td colspan="7" class="empty-note">Sin suplementos registrados.</td></tr>'; return; }
+  tbody.innerHTML = p.suplementos.map(function(s){
+    return '<tr><td>'+esc(s.nombre)+'</td><td>'+esc(s.ingrediente)+'</td><td>'+esc(s.dosis)+'</td><td>'+esc(s.motivo)+'</td><td>'+esc(s.fuente)+'</td>' +
+      '<td>'+tonePill(s.estado==='activa'?'good':'neutral', s.estado==='activa'?'Activa':'Inactiva')+'</td>' +
+      '<td class="row-actions"><button class="icon-btn edit-med" data-kind="sup" data-id="'+s.id+'" title="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>' +
+      '<button class="icon-btn toggle-med" data-kind="sup" data-id="'+s.id+'" title="'+(s.estado==='activa'?'Desactivar':'Reactivar')+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></td></tr>';
+  }).join('');
+  wireMedRows(p, tbody);
+}
+function wireMedRows(p, tbody){
+  tbody.querySelectorAll('.edit-med').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var kind = btn.getAttribute('data-kind'), id = btn.getAttribute('data-id');
+      var arr = kind==='med' ? p.medicamentos : p.suplementos;
+      openMedModal(p, kind, arr.find(function(x){ return x.id===id; }));
+    });
+  });
+  tbody.querySelectorAll('.toggle-med').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var kind = btn.getAttribute('data-kind'), id = btn.getAttribute('data-id');
+      MedicacionService.toggleEstado(p, kind, id);
+      renderMedicacion(p); renderPatientHeader(p);
+      showToast('Estado actualizado');
+    });
+  });
+}
+function renderMedicacion(p){ renderMeds(p); renderSupps(p); }
+
+/* ================= consulta actual + historial ================= */
+function readConsultForm(){
+  return {
+    motivo: document.getElementById('c-motivo').value.trim(),
+    expectativas: document.getElementById('c-expectativas').value.trim(),
+    objetivos: document.getElementById('c-objetivos').value.trim(),
+    prioridades: document.getElementById('c-prioridades').value.trim(),
+    inicio: document.getElementById('c-inicio').value.trim(),
+    frecuencia: document.getElementById('c-frecuencia').value.trim(),
+    desencadenantes: document.getElementById('c-desencadenantes').value.trim(),
+    alivian: document.getElementById('c-alivian').value.trim(),
+    notas: document.getElementById('c-notas').value.trim()
+  };
+}
+function fillConsultForm(c){
+  document.getElementById('c-motivo').value = c.motivo||'';
+  document.getElementById('c-expectativas').value = c.expectativas||'';
+  document.getElementById('c-objetivos').value = c.objetivos||'';
+  document.getElementById('c-prioridades').value = c.prioridades||'';
+  document.getElementById('c-inicio').value = c.inicio||'';
+  document.getElementById('c-frecuencia').value = c.frecuencia||'';
+  document.getElementById('c-desencadenantes').value = c.desencadenantes||'';
+  document.getElementById('c-alivian').value = c.alivian||'';
+  document.getElementById('c-notas').value = c.notas||'';
+  document.getElementById('field-c-motivo').classList.remove('invalid');
+}
+var ACTIVE_CONSULT_ID = null;
+function renderConsultaTab(p){
+  var draft = ConsultaService.getDraft(p);
+  ACTIVE_CONSULT_ID = draft ? draft.id : null;
+  document.getElementById('consulta-heading').textContent = draft ? 'Consulta en curso' : 'Consulta actual';
+  document.getElementById('consulta-estado-pill').textContent = draft ? 'Borrador' : 'Sin consulta activa';
+  document.getElementById('consulta-estado-pill').className = 'pill ' + (draft ? 'pill-warn' : 'pill-neutral');
+  if(draft){ fillConsultForm(draft); }
+  else { fillConsultForm({}); }
+  var latestV = getLatestVitals(p);
+  document.getElementById('c-vitals-today').textContent = latestV ? ('FC '+docPlain(latestV.fc)+', TA '+docPlain(latestV.ta)+' ('+isoToLabel(latestV.fecha)+')') : 'Sin registrar';
+
+  var hist = p.consultas.filter(function(c){ return c.estado==='finalizada'; });
+  var box = document.getElementById('consultas-historial');
+  if(!hist.length){ box.innerHTML = '<div class="empty-note">Aún no hay consultas finalizadas para este paciente.</div>'; }
+  else {
+    box.innerHTML = hist.map(function(c){
+      return '<button class="consulta-hist-item" data-id="'+c.id+'"><span><span class="primary">'+esc(isoToLabel(c.fecha))+'</span> · '+esc(docPlain(c.motivo,'Sin motivo registrado'))+'</span><span class="secondary">Ver / editar</span></button>';
+    }).join('');
+    box.querySelectorAll('.consulta-hist-item').forEach(function(btn){
+      btn.addEventListener('click', function(){ openConsultaHistorialModal(p, btn.getAttribute('data-id')); });
+    });
+  }
+}
+
+/* ================= línea temporal ================= */
+var TL_TYPES = [
+  {k:'paciente',label:'Paciente'},{k:'consulta',label:'Consultas'},{k:'lab',label:'Laboratorios'},
+  {k:'antropometria',label:'Antropometría'},{k:'vitales',label:'Signos vitales'},{k:'medicacion',label:'Medicación'},
+  {k:'antecedente',label:'Antecedentes'},{k:'nutricion',label:'Nutrición'},{k:'habito',label:'Hábitos'},
+  {k:'sintoma',label:'Síntomas'},{k:'resumen',label:'Resumen'},{k:'datos',label:'Datos personales'}
+];
+var tlActiveTypes = null;
+function renderTimeline(p){
+  if(!tlActiveTypes) tlActiveTypes = TL_TYPES.map(function(t){ return t.k; });
+  var filtersBox = document.getElementById('tl-filters');
+  filtersBox.innerHTML = TL_TYPES.map(function(t){
+    return '<button class="tl-filter'+(tlActiveTypes.indexOf(t.k)>=0?' on':'')+'" data-type="'+t.k+'">'+esc(t.label)+'</button>';
+  }).join('');
+  filtersBox.querySelectorAll('.tl-filter').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var t = btn.getAttribute('data-type');
+      var idx = tlActiveTypes.indexOf(t);
+      if(idx>=0) tlActiveTypes.splice(idx,1); else tlActiveTypes.push(t);
+      renderTimeline(p);
+    });
+  });
+  var items = p.timeline.filter(function(t){ return tlActiveTypes.indexOf(t.type)>=0; });
+  var box = document.getElementById('timeline');
+  if(!items.length){ box.innerHTML = '<div class="empty-note">No hay eventos que coincidan con los filtros seleccionados.</div>'; return; }
+  box.innerHTML = '<div class="timeline">'+items.map(function(t){
+    return '<div class="tl-item"><div class="tl-dot"></div><div class="tl-date">'+esc(timeAgo(t.ts))+' · '+esc(fmtDate(new Date(t.ts)))+'</div><div class="tl-title">'+esc(t.title)+'</div><div class="tl-desc">'+esc(t.desc||'')+'</div></div>';
+  }).join('')+'</div>';
+}
+
+/* ================= orquestador de la ficha de paciente ================= */
+function renderPatient(id){
+  var p = STATE.patients[id];
+  if(!p) return;
+  STATE.currentPatientId = id;
+  renderPatientHeader(p);
+  renderFuncProfile(p);
+  renderSymptoms(p);
+  renderResumen(p);
+  renderAntecedentes(p);
+  renderNutricion(p);
+  renderHabitos(p);
+  renderAntropometria(p);
+  renderLabs(p);
+  renderMedicacion(p);
+  renderConsultaTab(p);
+  renderTimeline(p);
+  updateAiContext();
+}
+
+function resetSubnavs(){
+  document.querySelectorAll('#nutri-subnav button').forEach(function(b,i){ b.classList.toggle('on', i===0); });
+  document.querySelectorAll('.nsub').forEach(function(el2,i){ el2.style.display = i===0?'':'none'; });
+  document.querySelectorAll('#habit-subnav button').forEach(function(b,i){ b.classList.toggle('on', i===0); });
+  document.querySelectorAll('.hsub').forEach(function(el2,i){ el2.style.display = i===0?'':'none'; });
+}
+
+function selectPatient(id){
+  if(!STATE.patients[id]) return;
+  document.querySelectorAll('.nav-item[data-nav]').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-nav')==='patient'); });
+  document.getElementById('view-dashboard').classList.remove('active');
+  document.getElementById('view-patient').classList.add('active');
+  document.querySelectorAll('.tab[data-tab]').forEach(function(t,i){ t.classList.toggle('active', i===0); });
+  document.querySelectorAll('.ptab[data-ptab]').forEach(function(t,i){ t.classList.toggle('active', i===0); });
+  resetSubnavs();
+  tlActiveTypes = null;
+  renderPatient(id);
+  renderSidebarRecent();
+  document.getElementById('search-results').innerHTML='';
+  document.getElementById('patient-search').value='';
+}
+
+function goToTab(tabName){
+  document.querySelectorAll('.tab[data-tab]').forEach(function(t){ t.classList.toggle('active', t.getAttribute('data-tab')===tabName); });
+  document.querySelectorAll('.ptab[data-ptab]').forEach(function(t){ t.classList.toggle('active', t.getAttribute('data-ptab')===tabName); });
+}
+
+/* ================= toast ================= */
+function showToast(msg, type){
+  var box = document.getElementById('toast-container');
+  var t = el('div','toast'+(type==='error'?' error':''), esc(msg));
+  box.appendChild(t);
+  requestAnimationFrame(function(){ t.classList.add('show'); });
+  setTimeout(function(){ t.classList.remove('show'); setTimeout(function(){ t.remove(); }, 220); }, 2600);
+}
+
+/* ================= modal genérico ================= */
+var MODAL_ESC_HANDLER = null;
+function openModal(html, onMount){
+  var scrim = document.getElementById('modal-scrim');
+  var box = document.getElementById('modal-box');
+  box.innerHTML = html;
+  scrim.classList.add('show');
+  if(onMount) onMount(box);
+  MODAL_ESC_HANDLER = function(e){ if(e.key==='Escape') closeModal(); };
+  document.addEventListener('keydown', MODAL_ESC_HANDLER);
+}
+function closeModal(){
+  var scrim = document.getElementById('modal-scrim');
+  scrim.classList.remove('show');
+  document.getElementById('modal-box').innerHTML='';
+  if(MODAL_ESC_HANDLER){ document.removeEventListener('keydown', MODAL_ESC_HANDLER); MODAL_ESC_HANDLER=null; }
+}
+document.getElementById('modal-scrim').addEventListener('click', function(e){
+  if(e.target.id==='modal-scrim') closeModal();
+});
+
+function fieldHtml(id,label,value,type,required,extra){
+  type = type||'text';
+  var reqMark = required ? ' <span class="req">*</span>' : '';
+  var inner = type==='textarea'
+    ? '<textarea id="'+id+'" rows="'+(extra&&extra.rows||3)+'">'+esc(value||'')+'</textarea>'
+    : (type==='select'
+      ? '<select id="'+id+'">'+ (extra&&extra.options||[]).map(function(o){ return '<option value="'+esc(o.v)+'"'+(o.v===value?' selected':'')+'>'+esc(o.l)+'</option>'; }).join('') +'</select>'
+      : '<input type="'+type+'" id="'+id+'" value="'+esc(value==null?'':value)+'">');
+  return '<div class="field" id="field-'+id+'"><label>'+esc(label)+reqMark+'</label>'+inner+'<div class="field-error">Este campo es obligatorio.</div></div>';
+}
+function validateRequired(ids){
+  var ok = true;
+  ids.forEach(function(id){
+    var f = document.getElementById('field-'+id);
+    var v = document.getElementById(id).value.trim();
+    if(!v){ f.classList.add('invalid'); ok=false; } else { f.classList.remove('invalid'); }
+  });
+  return ok;
+}
+
+/* ================= paciente nuevo ================= */
+function openNewPatientModal(){
+  openModal(
+    '<h3>Nuevo paciente</h3><div class="modal-sub">Complete al menos el nombre para crear la ficha. Podrá documentar el resto de la información después.</div>' +
+    '<div class="form-grid">' +
+      fieldHtml('np-nombre','Nombre','','text',true) +
+      fieldHtml('np-apellidos','Apellidos','','text',true) +
+      fieldHtml('np-fnac','Fecha de nacimiento','','date') +
+      fieldHtml('np-sexo','Sexo','','select',false,{options:[{v:'',l:'Seleccionar…'},{v:'Femenino',l:'Femenino'},{v:'Masculino',l:'Masculino'},{v:'Otro',l:'Otro'}]}) +
+      fieldHtml('np-documento','Documento de identidad','') +
+      fieldHtml('np-telefono','Teléfono','') +
+      fieldHtml('np-email','Correo electrónico','','email') +
+    '</div>' +
+    '<div class="modal-actions"><button class="btn btn-ghost" id="np-cancel">Cancelar</button><div class="right-actions"><button class="btn btn-primary" id="np-save">Crear paciente</button></div></div>',
+    function(){
+      document.getElementById('np-cancel').addEventListener('click', closeModal);
+      document.getElementById('np-save').addEventListener('click', function(){
+        if(!validateRequired(['np-nombre','np-apellidos'])) return;
+        var p = PatientService.create({
+          nombre: document.getElementById('np-nombre').value.trim(),
+          apellidos: document.getElementById('np-apellidos').value.trim(),
+          fechaNacimiento: document.getElementById('np-fnac').value,
+          sexo: document.getElementById('np-sexo').value,
+          documento: document.getElementById('np-documento').value.trim(),
+          telefono: document.getElementById('np-telefono').value.trim(),
+          email: document.getElementById('np-email').value.trim()
+        });
+        closeModal();
+        renderSidebarRecent();
+        renderDashboard();
+        selectPatient(p.id);
+        showToast('Paciente creado');
+      });
+    }
+  );
+}
+
+/* ================= editar datos personales ================= */
+function openEditPersonalModal(p){
+  var d = p.personal;
+  openModal(
+    '<h3>Editar datos personales</h3><div class="modal-sub">'+esc(fullName(p))+'</div>' +
+    '<div class="form-grid">' +
+      fieldHtml('ep-nombre','Nombre', d.nombre,'text',true) +
+      fieldHtml('ep-apellidos','Apellidos', d.apellidos,'text',true) +
+      fieldHtml('ep-fnac','Fecha de nacimiento', d.fechaNacimiento,'date') +
+      fieldHtml('ep-sexo','Sexo / género', d.sexo,'select',false,{options:[{v:'',l:'Seleccionar…'},{v:'Femenino',l:'Femenino'},{v:'Masculino',l:'Masculino'},{v:'Otro',l:'Otro'}]}) +
+      fieldHtml('ep-documento','Documento / identificador', d.documento) +
+      fieldHtml('ep-telefono','Teléfono', d.telefono) +
+      fieldHtml('ep-email','Correo electrónico', d.email,'email') +
+      fieldHtml('ep-direccion','Dirección', d.direccion) +
+      fieldHtml('ep-contacto','Contacto de emergencia', d.contactoEmergencia) +
+    '</div>' +
+    '<div class="modal-actions"><button class="btn btn-ghost" id="ep-cancel">Cancelar</button><div class="right-actions"><button class="btn btn-primary" id="ep-save">Guardar cambios</button></div></div>',
+    function(){
+      document.getElementById('ep-cancel').addEventListener('click', closeModal);
+      document.getElementById('ep-save').addEventListener('click', function(){
+        if(!validateRequired(['ep-nombre','ep-apellidos'])) return;
+        PatientService.updatePersonal(p, {
+          nombre: document.getElementById('ep-nombre').value.trim(),
+          apellidos: document.getElementById('ep-apellidos').value.trim(),
+          fechaNacimiento: document.getElementById('ep-fnac').value,
+          sexo: document.getElementById('ep-sexo').value,
+          documento: document.getElementById('ep-documento').value.trim(),
+          telefono: document.getElementById('ep-telefono').value.trim(),
+          email: document.getElementById('ep-email').value.trim(),
+          direccion: document.getElementById('ep-direccion').value.trim(),
+          contactoEmergencia: document.getElementById('ep-contacto').value.trim()
+        });
+        closeModal();
+        renderPatientHeader(p);
+        renderFuncProfile(p);
+        renderSidebarRecent();
+        showToast('Datos personales actualizados');
+      });
+    }
+  );
+}
+
+/* ================= seleccionar paciente (dashboard "Nueva consulta") ================= */
+function openSelectPatientModal(){
+  openModal(
+    '<h3>Nueva consulta</h3><div class="modal-sub">Seleccione el paciente para esta consulta.</div>' +
+    '<div class="search-box" style="max-width:100%;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input type="text" id="sp-search" placeholder="Buscar paciente…" autocomplete="off"></div>' +
+    '<div class="patient-picker-list" id="sp-list"></div>' +
+    '<div class="modal-actions"><button class="btn btn-ghost" id="sp-cancel">Cancelar</button><div class="right-actions"><button class="btn" id="sp-new">＋ Es un paciente nuevo</button></div></div>',
+    function(box){
+      function renderList(q){
+        var list = box.querySelector('#sp-list');
+        var ids = STATE.order.filter(function(id){
+          if(!q) return true;
+          var p = STATE.patients[id];
+          return normalize(fullName(p)).indexOf(normalize(q)) >= 0;
+        });
+        if(!ids.length){ list.innerHTML = '<div class="search-empty">No se encontraron pacientes.</div>'; return; }
+        list.innerHTML = ids.map(function(id){
+          var p = STATE.patients[id];
+          return '<button class="patient-picker-item" data-id="'+id+'"><span>'+esc(fullName(p))+'</span><span class="hit-meta">'+(ageFromDob(p.personal.fechaNacimiento)!=null?ageFromDob(p.personal.fechaNacimiento)+' años':'')+'</span></button>';
+        }).join('');
+        list.querySelectorAll('.patient-picker-item').forEach(function(btn){
+          btn.addEventListener('click', function(){
+            closeModal();
+            startNewConsult(btn.getAttribute('data-id'));
+          });
+        });
+      }
+      renderList('');
+      box.querySelector('#sp-search').addEventListener('input', function(e){ renderList(e.target.value); });
+      box.querySelector('#sp-cancel').addEventListener('click', closeModal);
+      box.querySelector('#sp-new').addEventListener('click', function(){ closeModal(); openNewPatientModal(); });
+    }
+  );
+}
+function startNewConsult(patientId){
+  selectPatient(patientId);
+  var p = STATE.patients[patientId];
+  var draft = ConsultaService.getDraft(p);
+  if(!draft) draft = ConsultaService.start(p);
+  ACTIVE_CONSULT_ID = draft.id;
+  renderConsultaTab(p);
+  goToTab('consulta');
+  showToast('Consulta iniciada');
+}
+
+/* ================= antecedentes ================= */
+function openAntecedenteModal(p, categoria, rec){
+  var isEdit = !!rec;
+  openModal(
+    '<h3>'+(isEdit?'Editar':'Documentar')+' antecedente</h3><div class="modal-sub">'+esc(catLabel(categoria))+'</div>' +
+    fieldHtml('an-status','Estado','','select',true,{options:[
+      {v:STATUS.NOT_DOCUMENTED,l:STATUS_LABEL[STATUS.NOT_DOCUMENTED]},
+      {v:STATUS.PRESENT,l:STATUS_LABEL[STATUS.PRESENT]},
+      {v:STATUS.ABSENT,l:STATUS_LABEL[STATUS.ABSENT]},
+      {v:STATUS.NOT_EVALUATED,l:STATUS_LABEL[STATUS.NOT_EVALUATED]},
+      {v:STATUS.UNKNOWN,l:STATUS_LABEL[STATUS.UNKNOWN]},
+      {v:STATUS.NOT_APPLICABLE,l:STATUS_LABEL[STATUS.NOT_APPLICABLE]}
+    ]}) +
+    fieldHtml('an-desc','Descripción', rec?rec.descripcion:'','textarea') +
+    fieldHtml('an-fecha','Fecha', rec?rec.fecha:todayISO(),'date') +
+    fieldHtml('an-obs','Observaciones', rec?rec.observaciones:'','textarea') +
+    '<div class="modal-actions">' + (isEdit ? '<button class="btn btn-danger" id="an-delete">Eliminar</button>' : '<span></span>') + '<div class="right-actions"><button class="btn btn-ghost" id="an-cancel">Cancelar</button><button class="btn btn-primary" id="an-save">Guardar</button></div></div>',
+    function(box){
+      if(rec) box.querySelector('#an-status').value = rec.status;
+      box.querySelector('#an-cancel').addEventListener('click', closeModal);
+      if(isEdit) box.querySelector('#an-delete').addEventListener('click', function(){
+        if(!confirm('¿Eliminar este registro?')) return;
+        AntecedenteService.remove(p, rec.id);
+        closeModal(); renderAntecedentes(p); renderFuncProfile(p);
+        showToast('Antecedente eliminado');
+      });
+      box.querySelector('#an-save').addEventListener('click', function(){
+        var data = { categoria: categoria, status: box.querySelector('#an-status').value, descripcion: box.querySelector('#an-desc').value.trim(), fecha: box.querySelector('#an-fecha').value, observaciones: box.querySelector('#an-obs').value.trim() };
+        if(isEdit) AntecedenteService.update(p, rec.id, data); else AntecedenteService.add(p, data);
+        closeModal(); renderAntecedentes(p); renderFuncProfile(p);
+        showToast('Antecedente guardado');
+      });
+    }
+  );
+}
+
+/* ================= nutrición (patrón / calidad / conducta) ================= */
+function openNutriModal(p, section, fields){
+  var data = p.nutricion[section];
+  openModal(
+    '<h3>Editar '+esc(NUTRI_SECTION_LABEL[section].toLowerCase())+'</h3><div class="modal-sub">Reemplace "por documentar" con información real del paciente.</div>' +
+    fields.map(function(f){ return fieldHtml('nu-'+f[0], f[1], data[f[0]], 'textarea', false, {rows:2}); }).join('') +
+    '<div class="modal-actions"><button class="btn btn-ghost" id="nu-cancel">Cancelar</button><div class="right-actions"><button class="btn btn-primary" id="nu-save">Guardar</button></div></div>',
+    function(box){
+      box.querySelector('#nu-cancel').addEventListener('click', closeModal);
+      box.querySelector('#nu-save').addEventListener('click', function(){
+        var upd = {};
+        fields.forEach(function(f){ upd[f[0]] = box.querySelector('#nu-'+f[0]).value.trim(); });
+        NutricionService.updateSection(p, section, upd);
+        closeModal();
+        if(section==='patron') renderNutriPatron(p);
+        else if(section==='calidad') renderNutriCalidad(p);
+        else renderNutriConducta(p);
+        renderFuncProfile(p);
+        showToast('Nutrición actualizada');
+      });
+    }
+  );
+}
+function openDiarioModal(p){
+  openModal(
+    '<h3>Añadir registro al diario alimentario</h3>' +
+    '<div class="form-grid">' +
+      fieldHtml('di-fecha','Fecha', todayISO(),'date',true) +
+      fieldHtml('di-hora','Hora','','time',true) +
+      fieldHtml('di-comida','Comida','','select',true,{options:[{v:'Desayuno',l:'Desayuno'},{v:'Media mañana',l:'Media mañana'},{v:'Almuerzo',l:'Almuerzo'},{v:'Media tarde',l:'Media tarde'},{v:'Cena',l:'Cena'}]}) +
+    '</div>' +
+    fieldHtml('di-alimentos','Alimentos consumidos','','textarea',true) +
+    '<div class="form-grid">' + fieldHtml('di-hambre','Nivel de hambre antes (0-10)','','number') + fieldHtml('di-saciedad','Nivel de saciedad después (0-10)','','number') + '</div>' +
+    fieldHtml('di-contexto','Contexto / emociones','','textarea') +
+    '<div class="modal-actions"><button class="btn btn-ghost" id="di-cancel">Cancelar</button><div class="right-actions"><button class="btn btn-primary" id="di-save">Guardar registro</button></div></div>',
+    function(box){
+      box.querySelector('#di-cancel').addEventListener('click', closeModal);
+      box.querySelector('#di-save').addEventListener('click', function(){
+        if(!validateRequired(['di-fecha','di-hora','di-comida','di-alimentos'])) return;
+        NutricionService.addDiario(p, {
+          fecha: box.querySelector('#di-fecha').value, hora: box.querySelector('#di-hora').value, comida: box.querySelector('#di-comida').value,
+          alimentos: box.querySelector('#di-alimentos').value.trim(), hambre: box.querySelector('#di-hambre').value, saciedad: box.querySelector('#di-saciedad').value,
+          contexto: box.querySelector('#di-contexto').value.trim()
+        });
+        closeModal(); renderFoodDiary(p);
+        showToast('Registro añadido al diario');
+      });
+    }
+  );
+}
+
+/* ================= hábitos por dominio ================= */
+function openHabitoModal(p, domain){
+  var data = p.habitos[domain];
+  var fields = HABIT_FIELDS[domain];
+  openModal(
+    '<h3>Editar '+esc(HABITO_DOMAIN_LABEL[domain].toLowerCase())+'</h3>' +
+    fields.map(function(f){ return fieldHtml('ha-'+f[0], f[1], data[f[0]], 'text'); }).join('') +
+    '<div class="modal-actions"><button class="btn btn-ghost" id="ha-cancel">Cancelar</button><div class="right-actions"><button class="btn btn-primary" id="ha-save">Guardar</button></div></div>',
+    function(box){
+      box.querySelector('#ha-cancel').addEventListener('click', closeModal);
+      box.querySelector('#ha-save').addEventListener('click', function(){
+        var upd = {};
+        fields.forEach(function(f){ upd[f[0]] = box.querySelector('#ha-'+f[0]).value.trim(); });
+        HabitoService.updateDomain(p, domain, upd);
+        closeModal(); renderHabitDomain(p, domain); renderFuncProfile(p);
+        showToast('Hábito actualizado');
+      });
+    }
+  );
+}
+function openSeguimientoModal(p){
+  openModal(
+    '<h3>Añadir semana de seguimiento</h3>' +
+    fieldHtml('sg-semana','Etiqueta de la semana','Semana '+(p.habitos.seguimiento.length+1)) +
+    '<div class="form-grid">' + fieldHtml('sg-actividad','Adherencia a actividad física (0-100)','60','number') + fieldHtml('sg-alimentacion','Adherencia a alimentación (0-100)','60','number') + '</div>' +
+    fieldHtml('sg-notas','Notas','','textarea') +
+    '<div class="modal-actions"><button class="btn btn-ghost" id="sg-cancel">Cancelar</button><div class="right-actions"><button class="btn btn-primary" id="sg-save">Guardar</button></div></div>',
+    function(box){
+      box.querySelector('#sg-cancel').addEventListener('click', closeModal);
+      box.querySelector('#sg-save').addEventListener('click', function(){
+        HabitoService.addSeguimiento(p, {
+          semana: box.querySelector('#sg-semana').value.trim(), actividad: box.querySelector('#sg-actividad').value, alimentacion: box.querySelector('#sg-alimentacion').value, notas: box.querySelector('#sg-notas').value.trim()
+        });
+        closeModal(); renderSeguimiento(p);
+        showToast('Seguimiento registrado');
+      });
+    }
+  );
+}
+
+/* ================= antropometría / vitales ================= */
+function openAntroModal(p){
+  openModal(
+    '<h3>Añadir medición antropométrica</h3><div class="modal-sub">El IMC se calcula automáticamente a partir del peso y la talla.</div>' +
+    '<div class="form-grid">' +
+      fieldHtml('am-fecha','Fecha', todayISO(),'date',true) +
+      fieldHtml('am-peso','Peso (kg)','','number',true) +
+      fieldHtml('am-talla','Talla (cm)','','number',true) +
+      fieldHtml('am-abdominal','Circunf. abdominal (cm)','','number') +
+      fieldHtml('am-cintura','Cintura (cm)','','number') +
+      fieldHtml('am-cadera','Cadera (cm)','','number') +
+      fieldHtml('am-graso','% graso','','text') +
+      fieldHtml('am-muscular','% muscular','','text') +
+    '</div>' +
+    '<div class="field"><label>IMC calculado</label><div class="mono" id="am-imc-preview" style="font-size:20px; font-weight:600;">—</div></div>' +
+    fieldHtml('am-obs','Observaciones','','textarea') +
+    '<div class="modal-actions"><button class="btn btn-ghost" id="am-cancel">Cancelar</button><div class="right-actions"><button class="btn btn-primary" id="am-save">Guardar medición</button></div></div>',
+    function(box){
+      function updatePreview(){
+        var peso = parseFloat(box.querySelector('#am-peso').value), talla = parseFloat(box.querySelector('#am-talla').value);
+        var out = box.querySelector('#am-imc-preview');
+        if(peso>0 && talla>0){ out.textContent = (peso/Math.pow(talla/100,2)).toFixed(1); } else { out.textContent = '—'; }
+      }
+      box.querySelector('#am-peso').addEventListener('input', updatePreview);
+      box.querySelector('#am-talla').addEventListener('input', updatePreview);
+      box.querySelector('#am-cancel').addEventListener('click', closeModal);
+      box.querySelector('#am-save').addEventListener('click', function(){
+        if(!validateRequired(['am-fecha','am-peso','am-talla'])) return;
+        AntropometriaService.addMedicion(p, {
+          fecha: box.querySelector('#am-fecha').value, peso: box.querySelector('#am-peso').value, talla: box.querySelector('#am-talla').value,
+          abdominal: box.querySelector('#am-abdominal').value, cintura: box.querySelector('#am-cintura').value, cadera: box.querySelector('#am-cadera').value,
+          graso: box.querySelector('#am-graso').value, muscular: box.querySelector('#am-muscular').value, observaciones: box.querySelector('#am-obs').value.trim()
+        });
+        closeModal(); renderAntropometria(p); renderFuncProfile(p); renderPatientHeader(p);
+        showToast('Medición registrada');
+      });
+    }
+  );
+}
+function openVitalsModal(p){
+  openModal(
+    '<h3>Añadir signos vitales</h3>' +
+    '<div class="form-grid">' +
+      fieldHtml('vm-fecha','Fecha', todayISO(),'date',true) +
+      fieldHtml('vm-fc','Frecuencia cardíaca (lpm)','','text') +
+      fieldHtml('vm-ta','Tensión arterial (mmHg)','','text') +
+      fieldHtml('vm-temp','Temperatura (°C)','','text') +
+      fieldHtml('vm-spo2','Saturación O2 (%)','','text') +
+    '</div>' +
+    fieldHtml('vm-obs','Observaciones','','textarea') +
+    '<div class="modal-actions"><button class="btn btn-ghost" id="vm-cancel">Cancelar</button><div class="right-actions"><button class="btn btn-primary" id="vm-save">Guardar</button></div></div>',
+    function(box){
+      box.querySelector('#vm-cancel').addEventListener('click', closeModal);
+      box.querySelector('#vm-save').addEventListener('click', function(){
+        if(!validateRequired(['vm-fecha'])) return;
+        VitalsService.addRegistro(p, { fecha: box.querySelector('#vm-fecha').value, fc: box.querySelector('#vm-fc').value.trim(), ta: box.querySelector('#vm-ta').value.trim(), temp: box.querySelector('#vm-temp').value.trim(), spo2: box.querySelector('#vm-spo2').value.trim(), observaciones: box.querySelector('#vm-obs').value.trim() });
+        closeModal(); renderAntropometria(p); renderConsultaTab(p);
+        showToast('Signos vitales registrados');
+      });
+    }
+  );
+}
+
+/* ================= laboratorios ================= */
+function openLabModal(p, rec){
+  var isEdit = !!rec;
+  openModal(
+    '<h3>'+(isEdit?'Editar':'Agregar')+' prueba de laboratorio</h3>' +
+    fieldHtml('lb-nombre','Nombre de la prueba', rec?rec.nombre:'','text',true) +
+    '<div class="form-grid">' +
+      fieldHtml('lb-valor','Valor', rec?rec.valor:'','text',true) +
+      fieldHtml('lb-unidad','Unidad', rec?rec.unidad:'') +
+      fieldHtml('lb-fecha','Fecha', rec?rec.fecha:todayISO(),'date',true) +
+      fieldHtml('lb-rango','Rango de referencia', rec?rec.rango:'') +
+    '</div>' +
+    fieldHtml('lb-tendencia','Tendencia', rec?rec.tendencia:'estable','select',false,{options:[{v:'estable',l:'Estable'},{v:'subiendo',l:'Subiendo'},{v:'bajando',l:'Bajando'}]}) +
+    fieldHtml('lb-obs','Observaciones', rec?rec.observaciones:'','textarea') +
+    '<div class="modal-actions">' + (isEdit?'<button class="btn btn-danger" id="lb-delete">Eliminar</button>':'<span></span>') + '<div class="right-actions"><button class="btn btn-ghost" id="lb-cancel">Cancelar</button><button class="btn btn-primary" id="lb-save">Guardar</button></div></div>',
+    function(box){
+      box.querySelector('#lb-cancel').addEventListener('click', closeModal);
+      if(isEdit) box.querySelector('#lb-delete').addEventListener('click', function(){
+        if(!confirm('¿Eliminar esta prueba de laboratorio?')) return;
+        LabService.remove(p, rec.id); closeModal(); renderLabs(p);
+        showToast('Prueba eliminada');
+      });
+      box.querySelector('#lb-save').addEventListener('click', function(){
+        if(!validateRequired(['lb-nombre','lb-valor','lb-fecha'])) return;
+        var data = { nombre: box.querySelector('#lb-nombre').value.trim(), valor: box.querySelector('#lb-valor').value.trim(), unidad: box.querySelector('#lb-unidad').value.trim(), fecha: box.querySelector('#lb-fecha').value, rango: box.querySelector('#lb-rango').value.trim(), tendencia: box.querySelector('#lb-tendencia').value, observaciones: box.querySelector('#lb-obs').value.trim() };
+        if(isEdit) LabService.update(p, rec.id, data); else LabService.add(p, data);
+        closeModal(); renderLabs(p);
+        showToast('Laboratorio guardado');
+      });
+    }
+  );
+}
+
+/* ================= medicamentos / suplementos ================= */
+function openMedModal(p, kind, rec){
+  var isEdit = !!rec;
+  var isMed = kind==='med';
+  openModal(
+    '<h3>'+(isEdit?'Editar':'Añadir')+' '+(isMed?'medicamento':'suplemento')+'</h3>' +
+    fieldHtml('md-nombre','Nombre', rec?rec.nombre:'','text',true) +
+    '<div class="form-grid">' +
+      fieldHtml('md-dosis','Dosis', rec?rec.dosis:'') +
+      (isMed ? fieldHtml('md-frecuencia','Frecuencia', rec?rec.frecuencia:'') : fieldHtml('md-ingrediente','Ingrediente activo', rec?rec.ingrediente:'')) +
+      (isMed ? fieldHtml('md-via','Vía', rec?rec.via:'') : fieldHtml('md-fuente','Fuente / indicado por', rec?rec.fuente:'')) +
+      fieldHtml('md-inicio','Fecha de inicio', rec?rec.inicio:todayISO(),'date') +
+      fieldHtml('md-fin','Fecha de fin (si aplica)', rec?rec.fin:'','date') +
+      (isMed ? fieldHtml('md-prescriptor','Prescriptor', rec?rec.prescriptor:'') : '') +
+    '</div>' +
+    fieldHtml('md-motivo','Motivo', rec?rec.motivo:'') +
+    fieldHtml('md-obs','Observaciones', rec?rec.observaciones:'','textarea') +
+    '<div class="modal-actions">' + (isEdit?'<button class="btn btn-danger" id="md-delete">Eliminar</button>':'<span></span>') + '<div class="right-actions"><button class="btn btn-ghost" id="md-cancel">Cancelar</button><button class="btn btn-primary" id="md-save">Guardar</button></div></div>',
+    function(box){
+      box.querySelector('#md-cancel').addEventListener('click', closeModal);
+      if(isEdit) box.querySelector('#md-delete').addEventListener('click', function(){
+        if(!confirm('¿Eliminar este registro?')) return;
+        var arr = isMed ? p.medicamentos : p.suplementos;
+        (isMed ? p.medicamentos : p.suplementos).splice(arr.indexOf(rec),1);
+        persist(); closeModal(); renderMedicacion(p); renderPatientHeader(p);
+        showToast('Registro eliminado');
+      });
+      box.querySelector('#md-save').addEventListener('click', function(){
+        if(!validateRequired(['md-nombre'])) return;
+        var data = { nombre: box.querySelector('#md-nombre').value.trim(), dosis: box.querySelector('#md-dosis').value.trim(), inicio: box.querySelector('#md-inicio').value, fin: box.querySelector('#md-fin').value, motivo: box.querySelector('#md-motivo').value.trim(), observaciones: box.querySelector('#md-obs').value.trim() };
+        if(isMed){ data.frecuencia = box.querySelector('#md-frecuencia').value.trim(); data.via = box.querySelector('#md-via').value.trim(); data.prescriptor = box.querySelector('#md-prescriptor').value.trim(); }
+        else { data.ingrediente = box.querySelector('#md-ingrediente').value.trim(); data.fuente = box.querySelector('#md-fuente').value.trim(); }
+        if(isEdit) MedicacionService.update(p, kind, rec.id, data); else MedicacionService.add(p, kind, data);
+        closeModal(); renderMedicacion(p); renderPatientHeader(p);
+        showToast((isMed?'Medicamento':'Suplemento')+' guardado');
+      });
+    }
+  );
+}
+
+/* ================= resumen clínico ================= */
+function openResumenModal(p){
+  var r = p.resumen;
+  var problemasHtml = (r.problemas||[]).map(function(pr,i){
+    return '<div class="form-grid" data-prob-row="'+i+'" style="margin-bottom:8px;"><input type="text" class="prob-nombre" placeholder="Problema" value="'+esc(pr.nombre)+'"><input type="text" class="prob-estado" placeholder="Estado (p.ej. Activo)" value="'+esc(pr.estado)+'"></div>';
+  }).join('');
+  var pendientesHtml = (r.pendientes||[]).map(function(pe,i){
+    return '<div class="form-grid" data-pend-row="'+i+'" style="margin-bottom:8px;"><input type="text" class="pend-texto" placeholder="Pendiente" value="'+esc(pe.texto)+'"><input type="date" class="pend-fecha" value="'+esc(pe.fecha||'')+'"></div>';
+  }).join('');
+  openModal(
+    '<h3>Editar resumen clínico</h3>' +
+    fieldHtml('rs-situacion','Situación general', r.situacion, 'textarea', false, {rows:4}) +
+    '<div class="field"><label>Objetivos</label>'+tagEditorHtml(r.objetivos,'resumen-objetivos')+'</div>' +
+    '<div class="field"><label>Problemas activos</label><div id="rs-problemas">'+problemasHtml+'</div><button class="btn btn-sm" id="rs-add-problema" type="button">＋ Añadir problema</button></div>' +
+    '<div class="field"><label>Pendientes de seguimiento</label><div id="rs-pendientes">'+pendientesHtml+'</div><button class="btn btn-sm" id="rs-add-pendiente" type="button">＋ Añadir pendiente</button></div>' +
+    '<div class="modal-actions"><button class="btn btn-ghost" id="rs-cancel">Cancelar</button><div class="right-actions"><button class="btn btn-primary" id="rs-save">Guardar resumen</button></div></div>',
+    function(box){
+      var objetivos = clone(r.objetivos||[]);
+      function renderTagBox(){
+        box.querySelector('[data-list="resumen-objetivos"]').outerHTML = tagEditorHtml(objetivos,'resumen-objetivos');
+        wireTagBox();
+      }
+      function wireTagBox(){
+        box.querySelectorAll('.rm-tag').forEach(function(btn){
+          btn.addEventListener('click', function(){ objetivos = objetivos.filter(function(o){ return o.id!==btn.getAttribute('data-id'); }); renderTagBox(); });
+        });
+        var input = box.querySelector('[data-addto="resumen-objetivos"]');
+        if(input) input.addEventListener('keydown', function(e){
+          if(e.key==='Enter'){ e.preventDefault(); if(e.target.value.trim()){ objetivos.push({id:uid('tag'), texto:e.target.value.trim()}); renderTagBox(); } }
+        });
+      }
+      wireTagBox();
+      box.querySelector('#rs-add-problema').addEventListener('click', function(){
+        var row = el('div','form-grid'); row.style.marginBottom='8px';
+        row.innerHTML = '<input type="text" class="prob-nombre" placeholder="Problema"><input type="text" class="prob-estado" placeholder="Estado (p.ej. Activo)">';
+        box.querySelector('#rs-problemas').appendChild(row);
+      });
+      box.querySelector('#rs-add-pendiente').addEventListener('click', function(){
+        var row = el('div','form-grid'); row.style.marginBottom='8px';
+        row.innerHTML = '<input type="text" class="pend-texto" placeholder="Pendiente"><input type="date" class="pend-fecha">';
+        box.querySelector('#rs-pendientes').appendChild(row);
+      });
+      box.querySelector('#rs-cancel').addEventListener('click', closeModal);
+      box.querySelector('#rs-save').addEventListener('click', function(){
+        var problemas = [];
+        box.querySelectorAll('#rs-problemas [data-prob-row], #rs-problemas > div').forEach(function(row){
+          var nombre = row.querySelector('.prob-nombre').value.trim();
+          var estado = row.querySelector('.prob-estado').value.trim();
+          if(nombre) problemas.push({ id: uid('prob'), nombre: nombre, estado: estado||'Activo', tone: 'warn' });
+        });
+        var pendientes = [];
+        box.querySelectorAll('#rs-pendientes [data-pend-row], #rs-pendientes > div').forEach(function(row){
+          var texto = row.querySelector('.pend-texto').value.trim();
+          var fecha = row.querySelector('.pend-fecha').value;
+          if(texto) pendientes.push({ id: uid('pend'), texto: texto, fecha: fecha });
+        });
+        ResumenService.update(p, { situacion: box.querySelector('#rs-situacion').value.trim(), objetivos: objetivos, problemas: problemas, pendientes: pendientes });
+        closeModal(); renderResumen(p); renderPatientHeader(p);
+        showToast('Resumen actualizado');
+      });
+    }
+  );
+}
+
+/* ================= historial de consultas: ver / editar ================= */
+function openConsultaHistorialModal(p, consultaId){
+  var c = p.consultas.find(function(x){ return x.id===consultaId; });
+  if(!c) return;
+  openModal(
+    '<h3>Consulta del '+esc(isoToLabel(c.fecha))+'</h3><div class="modal-sub">'+esc(c.profesional)+' · '+tonePill(c.estado==='finalizada'?'good':'warn', c.estado==='finalizada'?'Finalizada':'Borrador')+'</div>' +
+    fieldHtml('ch-motivo','Motivo', c.motivo,'textarea',true) +
+    fieldHtml('ch-notas','Notas de la consulta', c.notas,'textarea',false,{rows:4}) +
+    fieldHtml('ch-evaluacion','Evaluación', c.evaluacion,'textarea') +
+    fieldHtml('ch-plan','Plan', c.plan,'textarea') +
+    '<div class="modal-actions"><button class="btn btn-ghost" id="ch-cancel">Cerrar</button><div class="right-actions"><button class="btn btn-primary" id="ch-save">Guardar cambios</button></div></div>',
+    function(box){
+      box.querySelector('#ch-cancel').addEventListener('click', closeModal);
+      box.querySelector('#ch-save').addEventListener('click', function(){
+        if(!validateRequired(['ch-motivo'])) return;
+        ConsultaService.update(p, c.id, {
+          motivo: box.querySelector('#ch-motivo').value.trim(), notas: box.querySelector('#ch-notas').value.trim(),
+          evaluacion: box.querySelector('#ch-evaluacion').value.trim(), plan: box.querySelector('#ch-plan').value.trim()
+        });
+        closeModal(); renderConsultaTab(p);
+        showToast('Consulta actualizada');
+      });
+    }
+  );
+}
+
+/* ================= búsqueda de pacientes ================= */
+function runSearch(query, container, onPick){
+  var q = normalize(query.trim());
+  if(!q){ container.innerHTML=''; return; }
+  var hits = STATE.order.filter(function(id){
+    return normalize(fullName(STATE.patients[id])).indexOf(q) >= 0;
+  });
+  if(!hits.length){ container.innerHTML = '<div class="search-empty">No se encontraron pacientes que coincidan con "'+esc(query)+'".</div>'; return; }
+  container.innerHTML = hits.map(function(id){
+    var p = STATE.patients[id];
+    var age = ageFromDob(p.personal.fechaNacimiento);
+    return '<button class="search-hit" data-id="'+id+'"><span>'+esc(fullName(p))+'</span><span class="hit-meta">'+(age!=null?age+' años':'')+'</span></button>';
+  }).join('');
+  container.querySelectorAll('.search-hit').forEach(function(btn){
+    btn.addEventListener('click', function(){ onPick(btn.getAttribute('data-id')); });
+  });
+}
+
+/* ================= asistente de IA ================= */
+var AI_OPEN = false;
+function updateAiContext(){
+  var p = STATE.patients[STATE.currentPatientId];
+  var ctx = document.getElementById('ai-context');
+  if(!p){ ctx.textContent = 'Seleccione un paciente para activar el asistente.'; return; }
+  ctx.textContent = 'Analizando historia de '+fullName(p)+' · actualizado '+timeAgo(p.timeline[0]?p.timeline[0].ts:Date.now());
+}
+function joinOr(list, fallback){
+  var arr = (list||[]).map(function(x){ return typeof x==='string' ? x : x.texto; }).filter(Boolean);
+  return arr.length ? arr.join(', ') : fallback;
+}
+
+function buildOrganize(p){
+  var draft = ConsultaService.getDraft(p);
+  if(!draft || !isDocumented(draft.notas)) return '<p>No hay notas libres de consulta documentadas todavía para organizar. Escriba en el campo "Notas libres de la consulta" y vuelva a intentarlo.</p>';
+  return '<p><b>Notas organizadas:</b></p><p>Motivo: '+esc(docPlain(draft.motivo))+'</p><p>Historia: '+esc(docPlain(draft.inicio))+' · Frecuencia: '+esc(docPlain(draft.frecuencia))+'</p><p>Texto original: "'+esc(draft.notas)+'"</p>';
+}
+function buildSoap(p){
+  var draft = ConsultaService.getDraft(p) || p.consultas[0];
+  if(!draft) return '<p>Este paciente aún no tiene ninguna consulta registrada, por lo que no es posible generar un SOAP.</p>';
+  return '<p><b>S (Subjetivo):</b> '+esc(docPlain(draft.motivo))+'. '+esc(docPlain(draft.notas,''))+'</p>' +
+    '<p><b>O (Objetivo):</b> '+(getLatestVitals(p)?('FC '+docPlain(getLatestVitals(p).fc)+', TA '+docPlain(getLatestVitals(p).ta)):'Sin signos vitales documentados')+'</p>' +
+    '<p><b>A (Análisis):</b> '+esc(docPlain(draft.evaluacion,'Pendiente de evaluación clínica'))+'</p>' +
+    '<p><b>P (Plan):</b> '+esc(docPlain(draft.plan,'Pendiente de definir plan'))+'</p>';
+}
+function buildResumenPaciente(p){
+  return '<p>Hola '+esc((p.personal.nombre||'').split(' ')[0]||'')+', este es un resumen de tu situación actual: '+esc(docPlain(p.resumen.situacion,'aún estamos documentando tu situación general'))+'.</p>' +
+    '<p>Objetivos actuales: '+esc(joinOr(p.resumen.objetivos,'por definir'))+'.</p>';
+}
+function buildHabitsSummary(p){
+  var h = p.habitos;
+  return '<p>Actividad física: '+esc(docPlain(h.actividad.frecuencia))+'. Sueño: '+esc(docPlain(h.sueno.duracion))+' ('+esc(docPlain(h.sueno.calidad))+'). Estrés: '+esc(docPlain(h.estres.nivel))+'.</p>';
+}
+function buildComparison(p){
+  var finals = p.consultas.filter(function(c){ return c.estado==='finalizada'; });
+  if(finals.length < 2) return '<p>Todavía no hay al menos dos consultas finalizadas para comparar.</p>';
+  var a = finals[1], b = finals[0];
+  return '<p>Comparando la consulta del '+esc(isoToLabel(a.fecha))+' con la del '+esc(isoToLabel(b.fecha))+':</p>' +
+    '<p>Motivo anterior: '+esc(docPlain(a.motivo))+' → Motivo actual: '+esc(docPlain(b.motivo))+'</p>';
+}
+function buildPrepare(p){
+  var pend = p.resumen.pendientes||[];
+  return '<p>Para la próxima consulta de '+esc(fullName(p))+' considere revisar: '+ (pend.length? esc(pend.map(function(x){return x.texto;}).join('; ')) : 'no hay pendientes explícitos registrados, revise la línea temporal reciente') +'.</p>';
+}
+
+var AI_ACTIONS = [
+  {label:'Organizar mis notas', fn:buildOrganize},
+  {label:'Crear SOAP', fn:buildSoap},
+  {label:'Resumir al paciente', fn:buildResumenPaciente},
+  {label:'Resumir hábitos', fn:buildHabitsSummary},
+  {label:'Comparar con consulta anterior', fn:buildComparison},
+  {label:'Preparar próxima consulta', fn:buildPrepare}
+];
+function renderAiActions(){
+  var box = document.getElementById('ai-actions');
+  box.innerHTML = AI_ACTIONS.map(function(a,i){ return '<button class="ai-action" data-idx="'+i+'">'+esc(a.label)+'</button>'; }).join('');
+  box.querySelectorAll('.ai-action').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var a = AI_ACTIONS[parseInt(btn.getAttribute('data-idx'),10)];
+      var p = STATE.patients[STATE.currentPatientId];
+      if(!p){ showToast('Seleccione un paciente primero','error'); return; }
+      pushAiResponse(a.label, a.fn(p));
+    });
+  });
+}
+function pushAiResponse(question, htmlAnswer){
+  var box = document.getElementById('ai-messages');
+  var typing = el('div','ai-typing','<i></i><i></i><i></i>');
+  var msg = el('div','ai-msg');
+  msg.innerHTML = '<div class="q">'+esc(question)+'</div>';
+  var body = el('div','a'); body.appendChild(typing);
+  msg.appendChild(body);
+  box.appendChild(msg);
+  box.scrollTop = box.scrollHeight;
+  setTimeout(function(){
+    body.innerHTML = htmlAnswer;
+    box.scrollTop = box.scrollHeight;
+  }, 500);
+}
+var AI_TOPICS = [
+  {re:/peso|imc|antropometr/i, fn:function(p){ var a = getLatestAntro(p); if(!a) return '<p>No hay mediciones antropométricas documentadas para '+esc(fullName(p))+' todavía.</p>'; return '<p>El peso más reciente documentado es '+(a.peso!=null?a.peso+' kg':'no documentado')+' ('+esc(isoToLabel(a.fecha))+'), con un IMC calculado de '+(a.imc!=null?a.imc:'—')+'.</p>'; }},
+  {re:/sue[nñ]o|dormir/i, fn:function(p){ var s = p.habitos.sueno; if(!isDocumented(s.calidad) && !isDocumented(s.duracion)) return '<p>No hay datos de sueño documentados para '+esc(fullName(p))+'.</p>'; return '<p>Sueño: duración '+esc(docPlain(s.duracion))+', calidad percibida "'+esc(docPlain(s.calidad))+'".</p>'; }},
+  {re:/medicament|farmac/i, fn:function(p){ var activos = p.medicamentos.filter(function(m){return m.estado==='activa';}); if(!activos.length) return '<p>'+esc(fullName(p))+' no tiene medicamentos activos documentados.</p>'; return '<p>Medicamentos activos: '+esc(activos.map(function(m){return m.nombre+' ('+m.dosis+')';}).join(', '))+'.</p>'; }},
+  {re:/laborator|examen/i, fn:function(p){ if(!p.labs.length) return '<p>No hay laboratorios registrados para '+esc(fullName(p))+'.</p>'; return '<p>Últimos laboratorios: '+esc(p.labs.slice(0,3).map(function(l){return l.nombre+' '+l.valor+' '+l.unidad;}).join(', '))+'.</p>'; }},
+  {re:/alerg/i, fn:function(p){ var a = p.antecedentes.find(function(x){return x.categoria==='alergias';}); if(!a || a.status!==STATUS.PRESENT) return '<p>No hay alergias documentadas como presentes para '+esc(fullName(p))+'.</p>'; return '<p>Alergia documentada: '+esc(a.descripcion)+'.</p>'; }},
+  {re:/estr[eé]s/i, fn:function(p){ var e = p.habitos.estres; if(!isDocumented(e.nivel)) return '<p>El nivel de estrés no está documentado todavía para '+esc(fullName(p))+'.</p>'; return '<p>Nivel de estrés documentado: '+esc(e.nivel)+'. Fuentes: '+esc(docPlain(e.fuentes))+'.</p>'; }}
+];
+function answerQuestion(p, q){
+  for(var i=0;i<AI_TOPICS.length;i++){
+    if(AI_TOPICS[i].re.test(q)) return AI_TOPICS[i].fn(p);
+  }
+  return '<p>No encontré información documentada sobre eso en la ficha de '+esc(fullName(p))+'. Intente preguntar sobre peso, sueño, medicación, laboratorios, alergias o estrés.</p>';
+}
+
+/* ================= tema de color (solo estético, no toca STATE ni el backend) ================= */
+var BRAND_THEME_KEY = 'vitalis-brand-theme';
+function applyBrandTheme(brand){
+  if(!brand || brand === 'verde') document.documentElement.removeAttribute('data-brand');
+  else document.documentElement.setAttribute('data-brand', brand);
+  document.querySelectorAll('.brand-swatch').forEach(function(b){ b.classList.toggle('on', b.dataset.brand === (brand||'verde')); });
+  try{ localStorage.setItem(BRAND_THEME_KEY, brand||'verde'); }catch(e){}
+}
+function wireBrandTheme(){
+  document.querySelectorAll('.brand-swatch').forEach(function(btn){
+    btn.addEventListener('click', function(){ applyBrandTheme(btn.dataset.brand); });
+  });
+  var saved = 'verde';
+  try{ saved = localStorage.getItem(BRAND_THEME_KEY) || 'verde'; }catch(e){}
+  applyBrandTheme(saved);
+}
+
+/* ================= wiring de eventos e inicialización ================= */
+function wireEvents(){
+  wireBrandTheme();
+  document.getElementById('patient-search').addEventListener('input', function(e){
+    runSearch(e.target.value, document.getElementById('search-results'), function(id){ selectPatient(id); });
+  });
+
+  document.getElementById('btn-new-patient').addEventListener('click', openNewPatientModal);
+  document.getElementById('btn-new-consult').addEventListener('click', openSelectPatientModal);
+  document.getElementById('btn-new-consult-patient').addEventListener('click', function(){ startNewConsult(STATE.currentPatientId); });
+  document.getElementById('btn-edit-personal').addEventListener('click', function(){ openEditPersonalModal(STATE.patients[STATE.currentPatientId]); });
+  document.getElementById('btn-history').addEventListener('click', function(){ goToTab('linea'); });
+  document.getElementById('btn-add-antecedente').addEventListener('click', function(){ openAntecedenteModal(STATE.patients[STATE.currentPatientId], ANTECEDENTE_CATEGORIAS[0].k, null); });
+  document.getElementById('btn-add-diario').addEventListener('click', function(){ openDiarioModal(STATE.patients[STATE.currentPatientId]); });
+  document.getElementById('btn-add-lab').addEventListener('click', function(){ openLabModal(STATE.patients[STATE.currentPatientId], null); });
+  document.getElementById('btn-add-med').addEventListener('click', function(){ openMedModal(STATE.patients[STATE.currentPatientId], 'med', null); });
+  document.getElementById('btn-add-supp').addEventListener('click', function(){ openMedModal(STATE.patients[STATE.currentPatientId], 'sup', null); });
+
+  document.getElementById('btn-reset-demo').addEventListener('click', function(){
+    if(!confirm('¿Restablecer los datos de ejemplo? Se perderá toda la información creada en esta sesión de prueba.')) return;
+    resetDemoData();
+    renderSidebarRecent(); renderDashboard();
+    document.getElementById('nav-dashboard').click();
+    showToast('Datos de ejemplo restablecidos');
+  });
+
+  document.querySelectorAll('.nav-item[data-nav]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var nav = btn.getAttribute('data-nav');
+      document.querySelectorAll('.nav-item[data-nav]').forEach(function(b){ b.classList.toggle('active', b===btn); });
+      if(nav==='dashboard'){
+        document.getElementById('view-patient').classList.remove('active');
+        document.getElementById('view-dashboard').classList.add('active');
+        renderDashboard();
+      } else {
+        if(!STATE.currentPatientId) STATE.currentPatientId = STATE.order[0];
+        selectPatient(STATE.currentPatientId);
+      }
+    });
+  });
+
+  document.querySelectorAll('.tab[data-tab]').forEach(function(btn){
+    btn.addEventListener('click', function(){ goToTab(btn.getAttribute('data-tab')); });
+  });
+
+  function subnav(groupSel, itemSel, attr, panelSel, panelAttr){
+    document.querySelectorAll(groupSel+' '+itemSel).forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var val = btn.getAttribute(attr);
+        document.querySelectorAll(groupSel+' '+itemSel).forEach(function(b){ b.classList.toggle('on', b===btn); });
+        document.querySelectorAll(panelSel).forEach(function(pnl){ pnl.style.display = pnl.getAttribute(panelAttr)===val ? '' : 'none'; });
+      });
+    });
+  }
+  subnav('#nutri-subnav','button','data-nsub','.nsub','data-nsub-panel');
+  subnav('#habit-subnav','button','data-hsub','.hsub','data-hsub-panel');
+
+  document.getElementById('btn-cancel-consult').addEventListener('click', function(){
+    var p = STATE.patients[STATE.currentPatientId];
+    if(ACTIVE_CONSULT_ID){
+      if(!confirm('¿Cancelar esta consulta? Se perderá la información no guardada.')) return;
+      ConsultaService.cancelDraft(p, ACTIVE_CONSULT_ID);
+      ACTIVE_CONSULT_ID = null;
+    }
+    renderConsultaTab(p);
+    showToast('Consulta cancelada');
+  });
+  document.getElementById('btn-save-draft').addEventListener('click', function(){
+    var p = STATE.patients[STATE.currentPatientId];
+    if(!ACTIVE_CONSULT_ID){ var d = ConsultaService.start(p); ACTIVE_CONSULT_ID = d.id; }
+    ConsultaService.saveDraft(p, ACTIVE_CONSULT_ID, readConsultForm());
+    renderConsultaTab(p); renderDashboard();
+    showToast('Borrador guardado');
+  });
+  document.getElementById('btn-finish-consult').addEventListener('click', function(){
+    var p = STATE.patients[STATE.currentPatientId];
+    if(!validateRequired(['c-motivo'])) { showToast('Complete el motivo de consulta para finalizar','error'); return; }
+    if(!ACTIVE_CONSULT_ID){ var d = ConsultaService.start(p); ACTIVE_CONSULT_ID = d.id; }
+    var data = readConsultForm();
+    ConsultaService.finalize(p, ACTIVE_CONSULT_ID, data);
+    ResumenService.update(p, Object.assign({}, p.resumen, { situacion: p.resumen.situacion || data.motivo }));
+    ACTIVE_CONSULT_ID = null;
+    renderConsultaTab(p); renderPatientHeader(p); renderResumen(p); renderDashboard(); renderTimeline(p);
+    showToast('Consulta finalizada');
+  });
+
+  document.getElementById('ai-fab').addEventListener('click', function(){
+    AI_OPEN = true;
+    document.getElementById('ai-panel').classList.add('open');
+    document.getElementById('ai-scrim').classList.add('show');
+  });
+  function closeAi(){ AI_OPEN=false; document.getElementById('ai-panel').classList.remove('open'); document.getElementById('ai-scrim').classList.remove('show'); }
+  document.getElementById('ai-close').addEventListener('click', closeAi);
+  document.getElementById('ai-scrim').addEventListener('click', closeAi);
+  document.getElementById('ai-ask-btn').addEventListener('click', function(){
+    var input = document.getElementById('ai-ask-input');
+    var q = input.value.trim();
+    if(!q) return;
+    var p = STATE.patients[STATE.currentPatientId];
+    if(!p){ showToast('Seleccione un paciente primero','error'); return; }
+    pushAiResponse(q, answerQuestion(p,q));
+    input.value='';
+  });
+  document.getElementById('ai-ask-input').addEventListener('keydown', function(e){
+    if(e.key==='Enter') document.getElementById('ai-ask-btn').click();
+  });
+
+  renderAiActions();
+}
+
+/* ================= arranque ================= */
+loadState().then(function(){
+  STATE.currentPatientId = STATE.order[0];
+  wireEvents();
+  renderSidebarRecent();
+  renderDashboard();
+});
+
+})();
+</script>
+</body>
+</html>
