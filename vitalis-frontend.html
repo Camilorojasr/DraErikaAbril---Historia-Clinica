@@ -320,6 +320,9 @@ td{ padding:9px 10px; border-top:1px solid var(--border); vertical-align:middle;
         <button class="brand-swatch swatch-azul" data-brand="azul" title="Azul" aria-label="Tema azul"></button>
         <button class="brand-swatch swatch-morado" data-brand="morado" title="Morado" aria-label="Tema morado"></button>
       </div>
+      <button class="reset-link" id="btn-backup-download">Descargar copia de seguridad</button>
+      <button class="reset-link" id="btn-backup-restore">Restaurar desde copia de seguridad</button>
+      <input type="file" id="backup-file-input" accept="application/json" style="display:none;">
       <button class="reset-link" id="btn-reset-demo">Restablecer datos de ejemplo</button>
       <div class="storage-note" id="storage-note">Guardado en el servidor (base de datos).</div>
     </div>
@@ -1324,6 +1327,38 @@ function resetDemoData(){
   STATE.order = defaultOrder();
   STATE.currentPatientId = STATE.order[0];
   persist();
+}
+
+/* ================= copia de seguridad (backup / restore) =================
+   Descarga/restaura un archivo .json con todos los pacientes — independiente
+   de dónde viva la base de datos (%APPDATA%\Vitalis\vitalis.db en el .exe),
+   para que la Dra. pueda respaldar o migrar sus datos sin tocar archivos a mano. */
+function downloadBackup(){
+  var payload = JSON.stringify({ patients: STATE.patients, order: STATE.order, exportedAt: Date.now() }, null, 2);
+  var blob = new Blob([payload], {type:'application/json'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = 'vitalis-backup-'+todayISO()+'.json';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('Copia de seguridad descargada');
+}
+function restoreBackupFromFile(file){
+  var reader = new FileReader();
+  reader.onload = function(e){
+    var parsed;
+    try{ parsed = JSON.parse(e.target.result); }catch(err){ showToast('El archivo no es un respaldo válido (JSON inválido)', 'error'); return; }
+    if(!parsed || !parsed.patients || !parsed.order){ showToast('El archivo no tiene el formato esperado de un respaldo de Vitalis', 'error'); return; }
+    if(!confirm('¿Restaurar esta copia de seguridad? Esto REEMPLAZARÁ todos los pacientes y datos guardados actualmente en este computador. Esta acción no se puede deshacer.')) return;
+    STATE.patients = parsed.patients;
+    STATE.order = parsed.order;
+    STATE.currentPatientId = STATE.order[0] || null;
+    persist();
+    renderSidebarRecent(); renderDashboard();
+    document.getElementById('nav-dashboard').click();
+    showToast('Copia de seguridad restaurada');
+  };
+  reader.readAsText(file);
 }
 
 /* ================= utilidades de estado/documentación ================= */
@@ -2832,6 +2867,13 @@ function wireEvents(){
     renderSidebarRecent(); renderDashboard();
     document.getElementById('nav-dashboard').click();
     showToast('Datos de ejemplo restablecidos');
+  });
+  document.getElementById('btn-backup-download').addEventListener('click', downloadBackup);
+  document.getElementById('btn-backup-restore').addEventListener('click', function(){ document.getElementById('backup-file-input').click(); });
+  document.getElementById('backup-file-input').addEventListener('change', function(e){
+    var file = e.target.files[0];
+    if(file) restoreBackupFromFile(file);
+    e.target.value = '';
   });
 
   document.querySelectorAll('.nav-item[data-nav]').forEach(function(btn){
